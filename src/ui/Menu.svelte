@@ -46,6 +46,14 @@
       </div>
     </fieldset>
 
+    <fieldset>
+      <legend>Sound</legend>
+      <div class="actions">
+        <button type="button" class="btn" aria-pressed={game.settings.sound} onclick={() => game.setSound(true)}>On</button>
+        <button type="button" class="btn" aria-pressed={!game.settings.sound} onclick={() => game.setSound(false)}>Off</button>
+      </div>
+    </fieldset>
+
     <div class="actions column">
       {#if game.state && game.state.history.length > 0}
         <button type="button" class="btn" onclick={() => (game.overlay = 'book')}>Book of Verses</button>

@@ -15,6 +15,7 @@ import {
   type Book,
   type Settings,
 } from '../lib/storage';
+import { playCue, type Cue } from './sound';
 
 export type Screen = 'title' | 'play';
 export type Overlay = 'menu' | 'book' | null;
@@ -64,7 +65,10 @@ class Game {
   }
 
   openEye(eye: Eye): void {
-    if (this.state) this.#set(openEye(this.state, eye));
+    if (!this.state) return;
+    const next = openEye(this.state, eye);
+    if (next !== this.state) this.#cue('eye');
+    this.#set(next);
   }
 
   giveVerdict(verdict: Verdict): void {
@@ -75,11 +79,15 @@ class Game {
     if (id && !this.book.soulsMet.includes(id)) {
       this.#setBook({ ...this.book, soulsMet: [...this.book.soulsMet, id] });
     }
+    this.#cue(verdict);
     this.#set(next);
   }
 
   nextSoul(): void {
-    if (this.state) this.#set(nextSoul(this.state));
+    if (!this.state) return;
+    const next = nextSoul(this.state);
+    if (next.phase === 'dayEnd' && this.state.phase !== 'dayEnd') this.#cue('day');
+    this.#set(next);
   }
 
   nextDay(): void {
@@ -99,6 +107,15 @@ class Game {
 
   setTextSize(textSize: Settings['textSize']): void {
     this.#setSettings({ ...this.settings, textSize });
+  }
+
+  setSound(sound: boolean): void {
+    this.#setSettings({ ...this.settings, sound });
+    if (sound) this.#cue('eye');
+  }
+
+  #cue(cue: Cue): void {
+    if (this.settings.sound) playCue(cue);
   }
 
   resetProgress(): void {
