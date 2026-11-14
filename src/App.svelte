@@ -3,6 +3,7 @@
   import { game } from './ui/game.svelte';
   import { TEXT_SIZES } from './ui/labels';
   import Menu from './ui/Menu.svelte';
+  import Motes from './ui/Motes.svelte';
   import { NIGHT_SKY, daySky } from './ui/sky';
   import SoulScreen from './ui/SoulScreen.svelte';
   import Title from './ui/Title.svelte';
@@ -26,6 +27,7 @@
 <svelte:window onkeydown={onKeydown} />
 
 <div class="sky" class:night={sky === NIGHT_SKY} style:--sky-top={sky.top} style:--sky-bottom={sky.bottom}>
+  <Motes />
   {#if !playing}
     <Title />
   {:else if playing.phase === 'soul'}

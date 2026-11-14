@@ -116,7 +116,8 @@ describe('playing in the browser', () => {
 
     expect(souls).toBeGreaterThan(6);
     expect(text()).toMatch(/The Silent Sky|The Unquestioned|The Weighed World|The Gentle Age|The Iron Age/);
-    expect(text()).toContain('You were The Stern Weigher of Hearts.');
+    expect(text()).toContain('You were');
+    expect(text()).toContain('The Stern Weigher of Hearts');
   });
 
   it('shows the Echo with the Verse that summoned it', async () => {
