@@ -10,15 +10,17 @@ A small, free browser game. You are a young god watching over a river country ca
 
 The Scribe writes your verdict down as a one-line Verse. Then you see what you didn't, and what the living did with your words. Some of them come back to you later, *because of your Verse*.
 
-A Day takes about five minutes. A reign of five Days takes about half an hour and ends in one of five endings, with a title such as "The Gentle Weigher of Hearts". There are 40 handcrafted souls, and each reign shows up to 30 of them, so a second reign meets people you missed.
+A Day takes about five minutes. A reign of three Days takes about 15 minutes and ends in one of five endings, with a title such as "The Gentle Weigher of Hearts". There are 20 handcrafted souls, and the people who come back depend on what you said, so a second reign plays out differently.
+
+The writing is short and in plain English, and the game shows more than it tells: Eye cards flip over, each verdict has its own effect, and the results appear in quick beats you can skip.
 
 ## Controls
 
 | Action | Mouse or touch | Keyboard |
 |---|---|---|
-| Open an Eye | Tap it | 1, 2, 3 |
+| Flip an Eye card | Tap it | 1, 2, 3 |
 | Rise, Return, Fall | Tap the button | ↑, →, ↓ |
-| Next | Tap Next | Enter or Space |
+| Skip ahead, then Next | Tap anywhere, then Next | Enter or Space |
 | Menu | Menu button | Esc |
 
 Progress is saved in your browser after every action. Nothing is sent anywhere.
