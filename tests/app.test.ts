@@ -142,6 +142,18 @@ describe('playing in the browser', () => {
     expect(text()).toContain('The Wheel has turned twice today.');
   });
 
+  it('remembers judged souls in the Book of Souls', async () => {
+    await start();
+    click(button('Begin'));
+    press('2');
+    press('ArrowUp');
+    press('Escape');
+    click(button('Book of Souls'));
+    expect(text()).toContain('1 of 40 souls met');
+    expect(text()).toContain('Hettie Marrow, 81');
+    expect(text()).toContain('Not yet seen');
+  });
+
   it('resumes where the player left off', async () => {
     await start();
     click(button('Begin'));

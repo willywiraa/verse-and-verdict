@@ -18,7 +18,7 @@ import {
 import { playCue, type Cue } from './sound';
 
 export type Screen = 'title' | 'play';
-export type Overlay = 'menu' | 'book' | null;
+export type Overlay = 'menu' | 'book' | 'souls' | null;
 
 function randomSeed(): number {
   const value = new Uint32Array(1);

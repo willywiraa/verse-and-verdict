@@ -1,4 +1,5 @@
 <script lang="ts">
+  import BookOfSouls from './BookOfSouls.svelte';
   import BookOfVerses from './BookOfVerses.svelte';
   import { game } from './game.svelte';
 
@@ -25,6 +26,13 @@
   {#if game.overlay === 'book' && game.state}
     <h2 id="panel-title">Book of Verses</h2>
     <BookOfVerses reign={game.state} />
+    <div class="actions">
+      <button type="button" class="btn" onclick={() => (game.overlay = 'menu')}>Back</button>
+      <button type="button" class="btn primary" onclick={close}>Close</button>
+    </div>
+  {:else if game.overlay === 'souls'}
+    <h2 id="panel-title">Book of Souls</h2>
+    <BookOfSouls />
     <div class="actions">
       <button type="button" class="btn" onclick={() => (game.overlay = 'menu')}>Back</button>
       <button type="button" class="btn primary" onclick={close}>Close</button>
@@ -58,6 +66,7 @@
       {#if game.state && game.state.history.length > 0}
         <button type="button" class="btn" onclick={() => (game.overlay = 'book')}>Book of Verses</button>
       {/if}
+      <button type="button" class="btn" onclick={() => (game.overlay = 'souls')}>Book of Souls</button>
       {#if game.screen === 'play'}
         <button type="button" class="btn" onclick={() => game.toTitle()}>Return to title</button>
       {/if}
