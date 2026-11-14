@@ -75,7 +75,7 @@ describe('playing in the browser', () => {
     expect(text()).toContain('I have written it down.');
   });
 
-  it('plays a whole Day by keyboard, brings the Echo, and ends the reign', async () => {
+  it('plays a whole reign by keyboard, with the teaching Echo on Day 1', async () => {
     await start();
     click(button('Begin'));
 
@@ -98,9 +98,20 @@ describe('playing in the browser', () => {
     expect(text()).toContain('The World Below');
     expect(text()).toContain('The god cast down the baker. Bread alone saves no one.');
 
-    click(button('See how your reign ends'));
-    expect(text()).toContain('Your reign is over');
-    expect(text()).toContain('The Silent Sky'); // six Falls on beloved souls
+    let souls = seen.length;
+    while (!text().includes('Your reign is over')) {
+      if (text().includes('The World Below')) {
+        click(button(/Begin Day|See how your reign ends/));
+        continue;
+      }
+      press('2');
+      press('ArrowDown');
+      press('Enter');
+      if (++souls > 40) throw new Error('The reign never ended');
+    }
+
+    expect(souls).toBeGreaterThan(6);
+    expect(text()).toMatch(/The Silent Sky|The Unquestioned|The Weighed World|The Gentle Age|The Iron Age/);
     expect(text()).toContain('You were The Stern Weigher of Hearts.');
   });
 
