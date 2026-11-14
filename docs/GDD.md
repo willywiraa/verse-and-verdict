@@ -242,7 +242,7 @@ These three are written to the template and can ship as they are.
 ### 6.1 Hettie Marrow (root; Day 1, soul 1)
 - **Name, age:** Hettie Marrow, 81
 - **Death:** In her sleep, flour still on her hands.
-- **Emblem, hue:** loaf, 38
+- **Emblem, hue:** wheat, 38
 - **Record:** Baker of Lowmere for forty years. Fed the poor every feast day. The whole town followed her coffin.
 - **Plea:** "I only ever wanted everyone fed."
 - **Deed:** Every loaf she sold was a thumb light. Forty years of thumbs. Nobody ever checked her scale.
@@ -260,7 +260,7 @@ These three are written to the template and can ship as they are.
 ### 6.2 Orrin Vale (Echo of Hettie Marrow; Day 1, soul 5)
 - **Name, age:** Orrin Vale, 58
 - **Death:** A fever, in the richest bed in Lowmere.
-- **Emblem, hue:** padlock, 28
+- **Emblem, hue:** lock, 28
 - **Header:** "Because of your Verse on Hettie Marrow:" followed by that Verse.
 
 His Record and Plea depend on the verdict that summoned him:
@@ -286,7 +286,7 @@ His Eyes are the same in every version:
 ### 6.3 Dace Weller (root; Day 1, soul 2)
 - **Name, age:** Dace Weller, 34
 - **Death:** Hanged at the ferry landing.
-- **Emblem, hue:** rope, 205
+- **Emblem, hue:** anchor, 205
 - **Record:** Ferryman. In the spring flood he cut the tow rope and let eleven passengers drown to save himself. Nobody spoke for him.
 - **Plea:** "I would cut it again. Ask me why."
 - **Deed:** He was towing two boats in the flood and could hold only one. He cut loose eleven passengers and kept thirty children.
@@ -299,14 +299,14 @@ His Eyes are the same in every version:
 | Return | Send him back as a passenger on another man's ferry. | Who abandons the helpless shall return helpless. | Ferrymen begin taking an oath at the landing: the boat before the boatman. They call it Weller's Oath. | 0 |
 | Fall | Let the river have him, as it had the eleven. | Eleven went under. The god sent their ferryman after them. | Lowmere sleeps well. Thirty children grow up being told he was a coward, and one of them knows better. | +1 |
 
-- **Echo:** Nell Weller, his daughter, on Rise and Fall (not yet written).
+- **Echo:** Nell Weller, his daughter, on Rise and Fall (`src/content/souls/nell-weller.ts`).
   - After Rise she arrives as a ferry captain who swam for shore and left her passengers, quoting your Verse.
   - After Fall she arrives as a woman who never went near the river again, and watched a flood take her neighbours from the bank.
 
 ## 7. Screens and controls
 
 ### 7.1 Screens
-1. **Title.** Begin or Continue, a menu (text size, sound, Reset), and one content note: "A game about death and judgment. Nothing graphic. Some stories are sad."
+1. **Title.** Begin or Continue, a Settings button, and one content note: "A game about death and judgment. Nothing graphic. Some stories are sad." The menu (also opened with Esc during play) holds text size, sound, the Book of Verses, the Book of Souls, Return to title and Reset progress.
 2. **Soul.** The whole loop happens here (§7.2).
 3. **The World Below.** The Day's summary.
 4. **Ending.** The ending text, the Temperament, counts of each verdict and Eye, a button to read the Book of Verses, and Begin a new reign.
@@ -401,7 +401,7 @@ Every text and background pair must be checked for AA contrast before release.
 
 ### 8.2 Shapes and type
 - **Wisp.** One SVG flame shape, tinted by the soul's hue, with the soul's emblem icon inside and a slow bob.
-- **Emblems.** Icons from an open-licensed set. game-icons.net has the widest range of fitting icons and needs a credit line (CC BY 3.0). Phosphor and Lucide need none. Only the icons used are bundled, as inline SVG.
+- **Emblems.** Lucide icons (ISC licence, credited in the menu). A soul's emblem is the icon's name, such as `wheat` or `lock`. The allowed names live in `src/content/emblems.ts`, and only the icons listed there are bundled.
 - **Sky.** A CSS gradient that shifts with each soul, from pre-dawn indigo at soul 1 to dusk gold at soul 6. The World Below is night.
 - **Lamp.** A small lantern whose glow grows with Faith. Ten pips beneath it give the exact value, and screen readers hear "Faith 5 of 10".
 - **Type.** One self-hosted serif under the SIL Open Font License, such as Cormorant Garamond or EB Garamond, for names and Verses. The system font for everything else. Body text is at least 18 px, and the player can step it up twice.
@@ -419,7 +419,12 @@ All motion is CSS. With the reduced-motion setting on, each becomes a 0.15-secon
 | Lamp | The glow swells or shrinks | 0.4 s |
 
 ### 8.4 Sound (optional)
-A bell at each verdict, a soft cue for rising and falling, and a page sound for the Verse. All from CC0 sources, under 300 KB in total, loaded after the first click. The mute toggle is remembered.
+Synthesized in the browser with Web Audio, so there are no sound files. Each cue is a bell-like tone made of three sine partials with a fading tail:
+- a soft tick when an Eye opens;
+- a bright bell for Rise, a middle one for Return and a low one for Fall;
+- a two-note chime at the end of a Day.
+
+Sound is on by default, and the On/Off setting is remembered.
 
 ## 9. Technical design
 
@@ -434,19 +439,23 @@ A bell at each verdict, a soft cue for rising and falling, and a page sound for 
 src/
   content/
     souls/          one file per soul (typed data)
+    index.ts        every soul, and the fixed Day 1 order
+    emblems.ts      allowed emblem ids (Lucide icon names)
     endings.ts      the five ending texts
     scribe.ts       Day 1 hints, reaction lines, Day-end remarks
+    validate.ts     content checks and the random-reign simulation
   game/             plain TypeScript, no DOM
-    rng.ts          small seeded integer PRNG (mulberry32)
-    deck.ts         builds each Day
-    reign.ts        open an Eye, give a verdict, end the Day, pick the ending
-    temperament.ts
-  ui/               Svelte components
-    Title, Soul, Eyes, VerdictBar, Aftermath, WorldBelow, Ending, Lamp, Wisp
+    types.ts        souls, verdicts, Eyes
+    config.ts       numbers from §3, and the reign plan for each tier
+    rng.ts          small seeded integer PRNG (mulberry32) and shuffle
+    reign.ts        building Days, opening an Eye, giving a verdict, Echoes
+    outcome.ts      endings, quoted Verses, Temperament
   lib/
     storage.ts      versioned localStorage
+  ui/               Svelte components, the game store, sound
+tests/              Vitest: logic, outcomes, storage, content, interface
 scripts/
-  validate-content.ts
+  vitest.mjs        runs Vitest with an upper-case drive letter on Windows
 ```
 
 ### 9.3 Soul data
@@ -463,63 +472,83 @@ interface Outcome {
   faith: FaithChange;
 }
 
-interface Soul {
+interface Face {
+  record: string;     // what the living believe
+  plea: string;       // the soul's own words
+}
+
+interface SoulBase {
   id: string;
   name: string;
   age: number;
   death: string;
-  emblem: string;     // icon id
+  emblem: EmblemId;   // a Lucide icon name listed in content/emblems.ts
   hue: number;        // 0–359, tints the wisp
-  record: string;
-  plea: string;
   eyes: Record<Eye, string>;
   verdicts: Record<Verdict, Outcome>;
-  heavy?: boolean;    // left out by the gentler-content toggle
-
-  // Roots only: the Echo this soul can summon.
-  echo?: { soul: string; on: Verdict[]; sameDay?: boolean };
-
-  // Echoes only: the root, and a Record and Plea per summoning verdict.
-  origin?: string;
-  versions?: Partial<Record<Verdict, { record: string; plea: string }>>;
+  heavy?: boolean;    // left out by the gentler-content setting
 }
+
+interface RootSoul extends SoulBase, Face {
+  kind: 'root';
+  echo?: { soul: string; on: Verdict[]; sameDay?: boolean };
+}
+
+interface EchoSoul extends SoulBase {
+  kind: 'echo';
+  origin: string;                                  // the root that summons it
+  versions: Partial<Record<Verdict, Face>>;        // one per summoning verdict
+}
+
+type Soul = RootSoul | EchoSoul;
 ```
 
 ### 9.4 State and saving
 
 ```ts
-interface Save {
+interface ReignState {
   version: 1;
   seed: number;
+  firstReign: boolean;         // fixed Day 1 and the Scribe's hints
+  gentle: boolean;
+  plan: 'prototype' | 'firstRelease' | 'full';
+  roots: string[];             // this reign's roots, in arrival order
   day: number;                 // 1–5
   docket: string[];            // today's soul ids, in order
-  index: number;               // next soul in the docket
+  index: number;               // the current soul in the docket
+  phase: 'soul' | 'dayEnd' | 'ended';
   faith: number;               // 0–10
   returnsLeft: number;         // 0–2
+  eye: Eye | null;             // the Eye opened for the current soul
+  verdict: Verdict | null;     // set while the aftermath is showing
   history: { soul: string; day: number; eye: Eye; verdict: Verdict }[];
   waiting: { soul: string; summonedBy: Verdict; readyDay: number }[];
+  summons: Record<string, Verdict>;  // which verdict summoned each Echo
 }
 ```
 
-- Two `localStorage` keys: `vv.save.v1` for the current reign, and `vv.book.v1` for souls met and endings seen across reigns.
-- The save is written after every verdict and at the end of each Day.
-- If the stored version does not match, the game starts fresh. At this size there are no migrations.
-- Reset clears both keys after a confirmation.
+- Three `localStorage` keys: `vv.save.v1` for the current reign, `vv.book.v1` for souls met and endings seen across reigns, and `vv.settings.v1` for text size and sound.
+- The game saves after every action, including opening an Eye, so reloading cannot reveal a second Eye.
+- If the stored version does not match, or the save names a soul that no longer exists, the game starts fresh. At this size there are no migrations.
+- Reset clears the reign and the book after a confirmation. Settings stay.
+- If the browser blocks storage, the game keeps working in memory.
 
 ### 9.5 Building a Day
 
 ```
 startReign(seed, firstReign):
+  plan  = the largest tier the root count can fill:
+          5 roots → 1 Day [5]; 12 → 3 Days [5, 4, 3]; 20 → 5 Days [5, 4, 4, 4, 3]
   roots = firstReign ? day1Fixed + shuffle(otherRoots, seed)
                      : shuffle(allRoots, seed)
-  rootsPerDay = [5, 4, 4, 4, 3]
+  keep only as many roots as the plan needs
 
 startDay(d):
   todays  = the next rootsPerDay[d] roots
   places  = 6 - todays.length
   echoes  = the first `places` waiting Echoes whose readyDay <= d
-  docket  = todays with echoes slotted in from position 2,
-            never two Echoes in a row
+  docket  = todays with the echoes spread evenly after roots,
+            never first and never two Echoes in a row
   returnsLeft = 2
 
 giveVerdict(soul, verdict):
@@ -527,24 +556,24 @@ giveVerdict(soul, verdict):
   if verdict is 'return': returnsLeft -= 1
   if soul.echo and verdict is in soul.echo.on:
     if soul.echo.sameDay and today's docket has a free place:
-      insert the Echo 2 places later, or last if the Day is nearly over
+      insert the Echo at least three souls later, away from other Echoes
     else: add it to waiting with readyDay = day + 1
 ```
 
 In a first reign, Day 1 follows §4 exactly, with the teaching Echo fifth. The same seed always gives the same order, on every browser, because the shuffle uses integer maths only.
 
 ### 9.6 Validator
-`scripts/validate-content.ts` runs before every build and stops it on any error:
+`src/content/validate.ts`, run by `tests/content.test.ts`. `npm run validate` runs it on its own, and `npm run build` runs it first and stops on any error:
 - Every soul has all fields, three Eyes and three verdicts.
 - Every field is within its word limit, and the words before the verdict total at most 110, counting an Echo's header and quoted Verse.
 - Ids are unique.
 - Every `echo.soul` exists, points back with `origin`, and has a version for each summoning verdict.
 - No Echo has an `echo` of its own.
 - The Day 1 souls exist, and the first one summons its Echo on all three verdicts with `sameDay`.
-- The root count matches the tier: 12 or 20.
-- With heavy souls left out, every Day can still be filled.
+- Every emblem is in the allowed list, and every hue and age is in range.
+- No two verdict sentences or Verses of a soul are the same.
 
-It also plays 1,000 random reigns and warns if more than 1 Day in 10 has fewer than 5 souls.
+It warns, without failing, when the root count falls between tiers, or when leaving out heavy souls would shorten gentle reigns. It also plays 1,000 random reigns and warns if more than 1 Day in 10 has fewer than 5 souls.
 
 ### 9.7 Tests
 Vitest covers the logic in `game/`:
@@ -557,16 +586,20 @@ Vitest covers the logic in `game/`:
 - a save round trip;
 - the same seed giving the same order.
 
+Interface smoke tests mount the real app in happy-dom and play it with clicks and keys: the first-soul onboarding, a whole reign, the teaching Echo, the Return limit, the Book of Souls and resuming after a reload.
+
+On Windows, `npm test` goes through `scripts/vitest.mjs`, because a terminal opened as `d:\` instead of `D:\` makes Vitest load two copies of itself.
+
 ### 9.8 Hosting
 `vite build` produces static files for GitHub Pages or an itch.io HTML5 upload. itch.io serves many games from one domain, so the storage keys keep their `vv.` prefix.
 
 ## 10. Optional features
 
 ### 10.1 If time allows in version 1.0
-- **Book of Souls.** A page listing souls met, with all three Eyes shown, and endings seen. It persists across reigns.
-- **Share card.** Copy the Temperament and one Verse as text, or save them as an image drawn in the browser.
-- **Gentler-content toggle.** Leaves out souls flagged `heavy`.
-- **Sound** (§8.4).
+- **Book of Souls.** Done: a menu page listing souls met, with all three Eyes shown, and endings seen. It persists across reigns.
+- **Share card.** Done as text: "Copy my result" on the ending screen copies the ending, Temperament, verdict counts and the most loved Verse. Saving an image is not built.
+- **Sound.** Done (§8.4).
+- **Gentler-content toggle.** Not built yet. The logic supports it (`gentle` leaves out souls flagged `heavy`), but only 19 of the 20 roots are light, so gentle reigns would be three Days. One more light root is needed before adding the setting.
 
 ### 10.2 Later, only if the game earns it
 - A second Eye once per Day.

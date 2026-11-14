@@ -159,3 +159,19 @@ At 10–15 hours a week that is somewhere between 9 and 18 weeks. The plan targe
 ## 12. Out of scope
 
 Steam and desktop builds, monetization, accounts, analytics, multiplayer, and procedural generation are out. Ideas worth revisiting after version 1.0 are listed in GDD §10.2.
+
+## 13. Status (14 November 2026)
+
+- **Built:** FR-1 to FR-20, the full version 1.0 scope.
+  - 40 souls: 20 roots and 20 Echoes.
+  - Five-Day reigns with all 5 endings.
+  - Saving and resuming.
+  - Keyboard and touch controls.
+  - The validator, run before every build.
+- **Optional extras built:**
+  - FR-21, the Book of Souls.
+  - FR-22, the share card, as copied text only; saving an image is not built.
+  - FR-23, sound, synthesized in the browser so no audio files are needed.
+- **Not built:** FR-24, the gentler-content toggle. It needs one more light root first (GDD §10.1).
+- **Size:** about 55 KB of gzipped JavaScript, 4 KB of CSS and 70 KB of fonts, well under the 500 KB budget.
+- **Still to do:** the playtests in §9. No outside player has seen the game yet.
