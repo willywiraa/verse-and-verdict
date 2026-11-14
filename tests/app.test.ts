@@ -59,20 +59,20 @@ describe('playing in the browser', () => {
     click(button('Begin'));
 
     expect(document.querySelector('h1')?.textContent).toBe('Hettie Marrow, 81');
-    expect(text()).toContain('Open one Eye before you judge. Only one.');
+    expect(text()).toContain('Open one Eye. Only one.');
     expect(verdict('rise')?.disabled).toBe(true);
 
     click(button('Deed'));
-    expect(text()).toContain('Every loaf she sold was a thumb light.');
+    expect(text()).toContain('She sold every loaf a little light.');
     expect(button('Heart').disabled).toBe(true);
     expect(verdict('rise')?.disabled).toBe(false);
 
     click(verdict('rise'));
-    expect(text()).toContain('Who feeds the hungry shall be fed forever.');
+    expect(text()).toContain('Feed the hungry, and you will be rewarded.');
     expect(text()).toContain('What you did not see');
-    expect(text()).toContain('At six she watched a baker turn her mother away.');
+    expect(text()).toContain('She was a hungry child once.');
     expect(text()).toContain('Lowmere approves.');
-    expect(text()).toContain('I have written it down.');
+    expect(text()).toContain('I wrote it down.');
   });
 
   it('plays a whole reign by keyboard, with the teaching Echo on Day 1', async () => {
@@ -96,7 +96,7 @@ describe('playing in the browser', () => {
       'Ilse Brann, 90',
     ]);
     expect(text()).toContain('The World Below');
-    expect(text()).toContain('The god cast down the baker. Bread alone saves no one.');
+    expect(text()).toContain('Good deeds will not save you.');
 
     let souls = seen.length;
     while (!text().includes('Your reign is over')) {
@@ -125,8 +125,8 @@ describe('playing in the browser', () => {
     }
     expect(document.querySelector('h1')?.textContent).toBe('Orrin Vale, 58');
     expect(text()).toContain('Because of your Verse on Hettie Marrow');
-    expect(text()).toContain('Even the kind are sent back to learn.');
-    expect(text()).toContain('Told everyone a second life was coming');
+    expect(text()).toContain('Even good people must try again.');
+    expect(text()).toContain('Said everyone gets another life');
   });
 
   it('limits Return to two per Day', async () => {
@@ -139,7 +139,7 @@ describe('playing in the browser', () => {
     }
     press('1');
     expect(verdict('return')?.disabled).toBe(true);
-    expect(text()).toContain('The Wheel has turned twice today.');
+    expect(text()).toContain('No Returns left today');
   });
 
   it('remembers judged souls in the Book of Souls', async () => {

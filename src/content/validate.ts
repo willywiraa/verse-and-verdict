@@ -4,17 +4,57 @@ import { createRng } from '../game/rng';
 import { EYES, VERDICTS, type Content, type EchoSoul, type Face, type RootSoul, type Soul } from '../game/types';
 import { EMBLEM_IDS } from './emblems';
 
-/** GDD §5.1. */
+/** GDD §5.1: short, plain lines. */
 export const WORD_LIMITS = {
-  death: 8,
-  record: 28,
-  plea: 12,
-  eye: 26,
-  fate: 12,
-  verse: 12,
-  andSo: 22,
-  beforeVerdict: 110,
+  death: 6,
+  record: 14,
+  plea: 8,
+  eye: 14,
+  fate: 8,
+  verse: 8,
+  andSo: 12,
+  /** Death, Record, Plea and the longest Eye: everything read before a verdict. */
+  beforeVerdict: 45,
 } as const;
+
+/**
+ * Words that are hard for players who are not native English speakers.
+ * Using one is a warning, not an error: pick a simpler word.
+ */
+export const HARD_WORDS: ReadonlySet<string> = new Set([
+  'bailiff',
+  'bewildering',
+  'broadsheet',
+  'confiscated',
+  'declarations',
+  'delta',
+  'deserter',
+  'dike',
+  'favours',
+  'fishmonger',
+  'floodplain',
+  'granary',
+  'grimly',
+  'hamlet',
+  'inquest',
+  'knacker',
+  'lad',
+  'ledger',
+  'magistrate',
+  'mare',
+  'miller',
+  'quarrelsome',
+  'riddance',
+  'saffron',
+  'sluice',
+  'solemnity',
+  'squall',
+  'stallion',
+  'tannery',
+  'tinker',
+  'tribunal',
+  'untaxed',
+]);
 
 export interface ContentReport {
   errors: string[];
@@ -25,8 +65,13 @@ export function wordCount(text: string): number {
   return text.replace(/["“”]/g, ' ').trim().split(/\s+/).filter(Boolean).length;
 }
 
-export function echoHeader(rootName: string): string {
-  return `Because of your Verse on ${rootName}:`;
+/** The hard words used in a piece of text, lower-cased, without possessives. */
+export function hardWordsIn(text: string): string[] {
+  return text
+    .toLowerCase()
+    .replace(/['’]s\b/g, '')
+    .split(/[^a-z]+/)
+    .filter((word) => HARD_WORDS.has(word));
 }
 
 export function validateContent(content: Content): ContentReport {
@@ -38,12 +83,7 @@ export function validateContent(content: Content): ContentReport {
     byId.set(soul.id, soul);
   }
 
-  const check = (id: string, field: string, text: string, max: number) => {
-    if (!text?.trim()) errors.push(`${id}: ${field} is empty`);
-    else if (wordCount(text) > max) errors.push(`${id}: ${field} has ${wordCount(text)} words (limit ${max})`);
-  };
-
-  for (const soul of content.souls) checkSoul(soul, byId, check, errors);
+  for (const soul of content.souls) checkSoul(soul, byId, errors, warnings);
 
   const roots = content.souls.filter((s): s is RootSoul => s.kind === 'root');
   const echoes = content.souls.filter((s): s is EchoSoul => s.kind === 'echo');
@@ -90,33 +130,36 @@ export function validateContent(content: Content): ContentReport {
   return { errors, warnings };
 }
 
-function checkSoul(
-  soul: Soul,
-  byId: Map<string, Soul>,
-  check: (id: string, field: string, text: string, max: number) => void,
-  errors: string[],
-): void {
+function checkSoul(soul: Soul, byId: Map<string, Soul>, errors: string[], warnings: string[]): void {
   const id = soul.id;
+  const check = (field: string, text: string, max: number) => {
+    if (!text?.trim()) {
+      errors.push(`${id}: ${field} is empty`);
+      return;
+    }
+    if (wordCount(text) > max) errors.push(`${id}: ${field} has ${wordCount(text)} words (limit ${max})`);
+    for (const word of hardWordsIn(text)) warnings.push(`${id}: ${field} uses the hard word “${word}”`);
+  };
+
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(id)) errors.push(`${id}: id must be lowercase words joined by hyphens`);
   if (!soul.name?.trim()) errors.push(`${id}: name is empty`);
   if (!Number.isInteger(soul.age) || soul.age < 0 || soul.age > 120) errors.push(`${id}: age ${soul.age} is out of range`);
   if (!Number.isInteger(soul.hue) || soul.hue < 0 || soul.hue > 359) errors.push(`${id}: hue ${soul.hue} must be 0–359`);
   if (!(EMBLEM_IDS as readonly string[]).includes(soul.emblem)) errors.push(`${id}: unknown emblem ${soul.emblem}`);
 
-  check(id, 'death', soul.death, WORD_LIMITS.death);
-  for (const eye of EYES) check(id, `${eye} Eye`, soul.eyes[eye], WORD_LIMITS.eye);
+  check('death', soul.death, WORD_LIMITS.death);
+  for (const eye of EYES) check(`${eye} Eye`, soul.eyes[eye], WORD_LIMITS.eye);
   for (const verdict of VERDICTS) {
     const o = soul.verdicts[verdict];
-    check(id, `${verdict} fate`, o.fate, WORD_LIMITS.fate);
-    check(id, `${verdict} Verse`, o.verse, WORD_LIMITS.verse);
-    check(id, `${verdict} “And so”`, o.andSo, WORD_LIMITS.andSo);
+    check(`${verdict} fate`, o.fate, WORD_LIMITS.fate);
+    check(`${verdict} Verse`, o.verse, WORD_LIMITS.verse);
+    check(`${verdict} “And so”`, o.andSo, WORD_LIMITS.andSo);
     if (![-2, -1, 0, 1, 2].includes(o.faith)) errors.push(`${id}: ${verdict} Faith change must be −2 to +2`);
   }
   if (new Set(VERDICTS.map((v) => soul.verdicts[v].fate)).size < 3) errors.push(`${id}: fate lines must differ`);
   if (new Set(VERDICTS.map((v) => soul.verdicts[v].verse)).size < 3) errors.push(`${id}: Verses must differ`);
 
   let faces: Face[];
-  let header = 0;
   if (soul.kind === 'root') {
     faces = [{ record: soul.record, plea: soul.plea }];
   } else {
@@ -124,15 +167,13 @@ function checkSoul(
     if (faces.length === 0) errors.push(`${id}: an Echo needs at least one Record and Plea`);
     const origin = byId.get(soul.origin);
     if (!origin || origin.kind !== 'root') errors.push(`${id}: origin ${soul.origin} is not a root soul`);
-    else header = wordCount(echoHeader(origin.name)) + Math.max(...VERDICTS.map((v) => wordCount(origin.verdicts[v].verse)));
   }
 
   const longestEye = Math.max(...EYES.map((e) => wordCount(soul.eyes[e] ?? '')));
-  const sentences = VERDICTS.reduce((n, v) => n + wordCount(soul.verdicts[v].fate), 0);
   for (const face of faces) {
-    check(id, 'Record', face.record, WORD_LIMITS.record);
-    check(id, 'Plea', face.plea, WORD_LIMITS.plea);
-    const total = header + wordCount(soul.death) + wordCount(face.record) + wordCount(face.plea) + longestEye + sentences;
+    check('Record', face.record, WORD_LIMITS.record);
+    check('Plea', face.plea, WORD_LIMITS.plea);
+    const total = wordCount(soul.death) + wordCount(face.record) + wordCount(face.plea) + longestEye;
     if (total > WORD_LIMITS.beforeVerdict) {
       errors.push(`${id}: ${total} words before the verdict (limit ${WORD_LIMITS.beforeVerdict})`);
     }

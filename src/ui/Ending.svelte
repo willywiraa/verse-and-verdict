@@ -1,6 +1,6 @@
 <script lang="ts">
   import { tick } from 'svelte';
-  import { ENDINGS, endingText } from '../content/endings';
+  import { ENDINGS } from '../content/endings';
   import { pickEnding, quotedVerses, tally, temperament } from '../game/outcome';
   import type { ReignState } from '../game/reign';
   import BookOfVerses from './BookOfVerses.svelte';
@@ -11,7 +11,7 @@
 
   const ending = $derived(pickEnding(reign));
   const verses = $derived(quotedVerses(reign, game.content));
-  const text = $derived(endingText(ending, verses));
+  const text = $derived(ENDINGS[ending].text);
   const title = $derived(temperament(reign).title);
   const counts = $derived(tally(reign.history));
 
@@ -47,6 +47,8 @@
   <p class="eyebrow">Your reign is over</p>
   <h1 tabindex="-1" bind:this={heading}>{ENDINGS[ending].title}</h1>
   <p class="ending-text">{text}</p>
+  <p class="quoted">Loved most: “{verses.loved}”</p>
+  <p class="quoted">Hated most: “{verses.hated}”</p>
 
   <p class="temperament">You were <strong>{title}</strong>.</p>
 

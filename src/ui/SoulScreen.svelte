@@ -84,7 +84,7 @@
       <h2>The Record</h2>
       <p>{face.record}</p>
     </section>
-    <p class="plea">{face.plea}</p>
+    <p class="plea">“{face.plea}”</p>
 
     {#if outcome && reign.eye}
       <section class="aftermath" aria-live="polite">
