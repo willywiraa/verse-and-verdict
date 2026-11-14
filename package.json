@@ -1,8 +1,8 @@
 {
-  "name": "verse-and-verdict",
+  "name": "fit-the-crime",
   "private": true,
   "version": "0.1.0",
-  "description": "A small browser game: judge the dead, and watch the living act on your verdicts.",
+  "description": "A small browser game: pick the punishment, watch what happens.",
   "type": "module",
   "scripts": {
     "dev": "vite",

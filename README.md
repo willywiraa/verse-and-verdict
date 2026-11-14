@@ -1,8 +1,10 @@
-# Verse & Verdict
+# Fit the Crime
 
-*Judge the dead. The living are taking notes.*
+*Pick the punishment. Watch what happens.*
 
-A small, free browser game. You are a young god watching over a river country called Lowmere. The dead arrive one at a time as small lights. For each soul you:
+> **Being rebuilt.** This game is becoming a visual courtroom game: you judge criminal cases in a fictional city, pick a punishment from illustrated cards, and watch what happens next. Until the new version lands, the code below is the earlier soul-judging game, *Verse & Verdict*.
+
+The current build is a small, free browser game. You are a young god watching over a river country called Lowmere. The dead arrive one at a time as small lights. For each soul you:
 
 1. read what the living believe about them, and their plea;
 2. open **one** of three Eyes to glimpse the truth: **Deed**, **Heart** or **Ripple**;
