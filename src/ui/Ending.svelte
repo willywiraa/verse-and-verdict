@@ -10,11 +10,31 @@
   let { reign }: { reign: ReignState } = $props();
 
   const ending = $derived(pickEnding(reign));
-  const text = $derived(endingText(ending, quotedVerses(reign, game.content)));
+  const verses = $derived(quotedVerses(reign, game.content));
+  const text = $derived(endingText(ending, verses));
   const title = $derived(temperament(reign).title);
   const counts = $derived(tally(reign.history));
 
   let showBook = $state(false);
+
+  const shareText = $derived(
+    [
+      `Verse & Verdict · ${ENDINGS[ending].title}`,
+      `I was ${title}.`,
+      `Rise ${counts.verdicts.rise} · Return ${counts.verdicts.return} · Fall ${counts.verdicts.fall}`,
+      `“${verses.loved}”`,
+    ].join('\n'),
+  );
+  let share = $state<'idle' | 'copied' | 'manual'>('idle');
+
+  async function copyResult() {
+    try {
+      await navigator.clipboard.writeText(shareText);
+      share = 'copied';
+    } catch {
+      share = 'manual';
+    }
+  }
   let heading = $state<HTMLHeadingElement>();
   $effect(() => {
     tick().then(() => heading?.focus({ preventScroll: true }));
@@ -44,7 +64,16 @@
     <button type="button" class="btn" aria-expanded={showBook} onclick={() => (showBook = !showBook)}>
       {showBook ? 'Close the Book of Verses' : 'Read the Book of Verses'}
     </button>
+    <button type="button" class="btn" onclick={copyResult}>{share === 'copied' ? 'Copied' : 'Copy my result'}</button>
   </div>
+
+  <p class="sr-only" aria-live="polite">{share === 'copied' ? 'Your result was copied.' : ''}</p>
+  {#if share === 'manual'}
+    <label class="share">
+      Copy this to share:
+      <textarea readonly rows="4" value={shareText} onfocus={(e) => e.currentTarget.select()}></textarea>
+    </label>
+  {/if}
 
   {#if showBook}
     <BookOfVerses {reign} />
@@ -69,6 +98,24 @@
     color: var(--gold);
     font-family: var(--serif);
     font-size: 1.35rem;
+  }
+
+  .share {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .share textarea {
+    width: 100%;
+    padding: 0.6rem;
+    border-radius: 10px;
+    border: 1px solid rgb(245 236 215 / 0.4);
+    background: rgb(15 18 38 / 0.7);
+    color: var(--parchment);
+    font: inherit;
+    resize: none;
   }
 
   .counts {
