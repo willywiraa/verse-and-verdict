@@ -149,7 +149,7 @@ describe('playing in the browser', () => {
     press('ArrowUp');
     press('Escape');
     click(button('Book of Souls'));
-    expect(text()).toContain('1 of 40 souls met');
+    expect(text()).toContain('1 of 20 souls met');
     expect(text()).toContain('Hettie Marrow, 81');
     expect(text()).toContain('Not yet seen');
   });

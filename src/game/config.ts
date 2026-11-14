@@ -16,16 +16,13 @@ export interface ReignPlan {
 }
 
 const SHORT_ENDINGS: readonly EndingId[] = ['silent-sky', 'unquestioned', 'weighed-world'];
+const ALL_ENDINGS: readonly EndingId[] = ['silent-sky', 'unquestioned', 'gentle-age', 'iron-age', 'weighed-world'];
 
 /** The reign grows with the amount of content written (see PRD §5). */
 export const PLANS = {
   prototype: { days: 1, rootsPerDay: [5], endings: SHORT_ENDINGS },
-  firstRelease: { days: 3, rootsPerDay: [5, 4, 3], endings: SHORT_ENDINGS },
-  full: {
-    days: 5,
-    rootsPerDay: [5, 4, 4, 4, 3],
-    endings: ['silent-sky', 'unquestioned', 'gentle-age', 'iron-age', 'weighed-world'],
-  },
+  firstRelease: { days: 3, rootsPerDay: [5, 4, 3], endings: ALL_ENDINGS },
+  full: { days: 5, rootsPerDay: [5, 4, 4, 4, 3], endings: ALL_ENDINGS },
 } as const satisfies Record<string, ReignPlan>;
 
 export type PlanId = keyof typeof PLANS;

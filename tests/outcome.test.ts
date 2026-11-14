@@ -35,7 +35,7 @@ describe('endings', () => {
   });
 
   it('only uses the endings of the current plan', () => {
-    expect(pickEnding(withHistory(gentle, { plan: 'firstRelease' }))).toBe('weighed-world');
+    expect(pickEnding(withHistory(gentle, { plan: 'firstRelease' }))).toBe('gentle-age');
     expect(pickEnding(withHistory(stern, { plan: 'prototype' }))).toBe('weighed-world');
   });
 
