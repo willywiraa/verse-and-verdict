@@ -17,6 +17,8 @@ class Court {
   settings = $state.raw<Settings>(loadSettings(this.#store));
   screen = $state<Screen>('title');
   menuOpen = $state(false);
+  /** True right after a verdict is given, so its consequences play; false for one loaded from a save. */
+  fresh = false;
 
   get dayInProgress(): boolean {
     return this.state !== null && this.state.phase !== 'report';
@@ -44,6 +46,7 @@ class Court {
     if (!this.state) return false;
     const judged = sentence(this.state, this.content, option);
     if (judged === this.state) return false;
+    this.fresh = true;
     this.#set(judged);
     return true;
   }

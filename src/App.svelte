@@ -3,7 +3,7 @@
   import { TEXT_SIZES, court } from './ui/court.svelte';
   import CourtTitle from './ui/CourtTitle.svelte';
   import DayReport from './ui/DayReport.svelte';
-  import VerdictView from './ui/VerdictView.svelte';
+  import VerdictSequence from './ui/VerdictSequence.svelte';
 
   const day = $derived(court.screen === 'play' ? court.state : null);
 
@@ -20,7 +20,7 @@
       <CaseScreen {day} />
     {/key}
   {:else if day.phase === 'verdict'}
-    <VerdictView {day} />
+    <VerdictSequence {day} />
   {:else}
     <DayReport {day} />
   {/if}

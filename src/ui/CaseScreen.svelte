@@ -31,8 +31,7 @@
   }
 
   function sentence(): void {
-    if (selected === null) return;
-    if (court.sentence(selected)) court.cue('gavel');
+    if (selected !== null) court.sentence(selected);
   }
 
   function onKeydown(event: KeyboardEvent): void {

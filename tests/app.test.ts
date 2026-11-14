@@ -55,6 +55,35 @@ beforeEach(() => localStorage.clear());
 afterEach(stop);
 
 describe('playing in the browser', () => {
+  it('plays a verdict in beats: gavel, stamp, scene, crowd, headline', async () => {
+    vi.useFakeTimers();
+    try {
+      await start();
+      click(button('Start court'));
+      press('q');
+      press('Enter');
+      expect(text()).not.toContain('Sentenced');
+      vi.advanceTimersByTime(700);
+      flushSync();
+      expect(text()).toContain('Sentenced');
+      expect(text()).toContain('Prison · 20 years');
+      vi.advanceTimersByTime(1000);
+      flushSync();
+      expect(text()).toContain('20 years');
+      expect(text()).not.toContain('Yes!');
+      vi.advanceTimersByTime(2400);
+      flushSync();
+      expect(text()).toContain('Yes!');
+      expect(text()).toContain('Money still missing');
+      vi.advanceTimersByTime(1400);
+      flushSync();
+      expect(text()).toContain('Harjo gets 20 years. Money still gone.');
+      expect(button('End the day')).toBeTruthy();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('opens on the title, then the first case file', async () => {
     await start();
     expect(text()).toContain('Fit the Crime');
@@ -94,7 +123,13 @@ describe('playing in the browser', () => {
     expect(button('Sentence').disabled).toBe(false);
 
     press('Enter');
+    expect(text()).toContain('Tap to skip');
+    expect(text()).not.toContain('His mansion builds 5 hospitals');
+    press('Enter');
     expect(text()).toContain('His mansion builds 5 hospitals');
+    expect(text()).toContain('Left in his socks');
+    expect(text()).toContain('Fair enough.');
+    expect(text()).toContain('Crowd +1');
     press('Enter');
     expect(text()).toContain('Court is over');
   });
@@ -104,11 +139,14 @@ describe('playing in the browser', () => {
     click(button('Start court'));
     click(cards()[3]);
     click(button('Sentence'));
+    click(document.querySelector('main'));
     expect(text()).toContain('Harjo banned from office for life');
     stop();
 
     await start();
     click(button('Continue'));
+    // A verdict loaded from a save shows its outcome without replaying.
     expect(text()).toContain('Harjo banned from office for life');
+    expect(text()).not.toContain('Tap to skip');
   });
 });
