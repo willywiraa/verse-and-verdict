@@ -1,14 +1,42 @@
-<main class="placeholder">
-  <h1>Verse &amp; Verdict</h1>
-  <p>Judge the dead. The living are taking notes.</p>
-</main>
+<script lang="ts">
+  import Ending from './ui/Ending.svelte';
+  import { game } from './ui/game.svelte';
+  import { TEXT_SIZES } from './ui/labels';
+  import Menu from './ui/Menu.svelte';
+  import { NIGHT_SKY, daySky } from './ui/sky';
+  import SoulScreen from './ui/SoulScreen.svelte';
+  import Title from './ui/Title.svelte';
+  import WorldBelow from './ui/WorldBelow.svelte';
 
-<style>
-  .placeholder {
-    min-height: 100vh;
-    display: grid;
-    place-content: center;
-    text-align: center;
-    gap: 0.5rem;
+  const playing = $derived(game.screen === 'play' ? game.state : null);
+  const sky = $derived(playing?.phase === 'soul' ? daySky(playing.index, playing.docket.length) : NIGHT_SKY);
+
+  $effect(() => {
+    document.documentElement.style.fontSize = TEXT_SIZES[game.settings.textSize];
+  });
+
+  function onKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && !game.overlay && game.screen === 'play') {
+      event.preventDefault();
+      game.overlay = 'menu';
+    }
   }
-</style>
+</script>
+
+<svelte:window onkeydown={onKeydown} />
+
+<div class="sky" class:night={sky === NIGHT_SKY} style:--sky-top={sky.top} style:--sky-bottom={sky.bottom}>
+  {#if !playing}
+    <Title />
+  {:else if playing.phase === 'soul'}
+    <SoulScreen reign={playing} />
+  {:else if playing.phase === 'dayEnd'}
+    <WorldBelow reign={playing} />
+  {:else}
+    <Ending reign={playing} />
+  {/if}
+
+  {#if game.overlay}
+    <Menu />
+  {/if}
+</div>

@@ -1,4 +1,7 @@
 import { mount } from 'svelte';
+import '@fontsource/cormorant-garamond/latin-500.css';
+import '@fontsource/cormorant-garamond/latin-500-italic.css';
+import '@fontsource/cormorant-garamond/latin-600.css';
 import App from './App.svelte';
 import './styles/global.css';
 
