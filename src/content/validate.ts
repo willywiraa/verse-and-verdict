@@ -10,7 +10,7 @@ export const WORD_LIMITS = {
   record: 28,
   plea: 12,
   eye: 26,
-  sentence: 12,
+  fate: 12,
   verse: 12,
   andSo: 22,
   beforeVerdict: 110,
@@ -107,12 +107,12 @@ function checkSoul(
   for (const eye of EYES) check(id, `${eye} Eye`, soul.eyes[eye], WORD_LIMITS.eye);
   for (const verdict of VERDICTS) {
     const o = soul.verdicts[verdict];
-    check(id, `${verdict} sentence`, o.sentence, WORD_LIMITS.sentence);
+    check(id, `${verdict} fate`, o.fate, WORD_LIMITS.fate);
     check(id, `${verdict} Verse`, o.verse, WORD_LIMITS.verse);
     check(id, `${verdict} “And so”`, o.andSo, WORD_LIMITS.andSo);
     if (![-2, -1, 0, 1, 2].includes(o.faith)) errors.push(`${id}: ${verdict} Faith change must be −2 to +2`);
   }
-  if (new Set(VERDICTS.map((v) => soul.verdicts[v].sentence)).size < 3) errors.push(`${id}: verdict sentences must differ`);
+  if (new Set(VERDICTS.map((v) => soul.verdicts[v].fate)).size < 3) errors.push(`${id}: fate lines must differ`);
   if (new Set(VERDICTS.map((v) => soul.verdicts[v].verse)).size < 3) errors.push(`${id}: Verses must differ`);
 
   let faces: Face[];
@@ -128,7 +128,7 @@ function checkSoul(
   }
 
   const longestEye = Math.max(...EYES.map((e) => wordCount(soul.eyes[e] ?? '')));
-  const sentences = VERDICTS.reduce((n, v) => n + wordCount(soul.verdicts[v].sentence), 0);
+  const sentences = VERDICTS.reduce((n, v) => n + wordCount(soul.verdicts[v].fate), 0);
   for (const face of faces) {
     check(id, 'Record', face.record, WORD_LIMITS.record);
     check(id, 'Plea', face.plea, WORD_LIMITS.plea);

@@ -19,19 +19,19 @@ const soul: RootSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Lift him up, rope-burned hands and all.',
+      fate: 'Lift him up, rope-burned hands and all.',
       verse: 'The god raised the rope-cutter. Save yourself, and be saved.',
       andSo: 'Captains on the delta stop going down with their boats. Passengers start learning to swim.',
       faith: -2,
     },
     return: {
-      sentence: 'Send him back as a passenger on another man’s ferry.',
+      fate: 'Send him back as a passenger on another man’s ferry.',
       verse: 'Who abandons the helpless shall return helpless.',
       andSo: 'Ferrymen begin taking an oath at the landing: the boat before the boatman. They call it Weller’s Oath.',
       faith: 0,
     },
     fall: {
-      sentence: 'Let the river have him, as it had the eleven.',
+      fate: 'Let the river have him, as it had the eleven.',
       verse: 'Eleven went under. The god sent their ferryman after them.',
       andSo: 'Lowmere sleeps well. Thirty children grow up being told he was a coward, and one of them knows better.',
       faith: 1,

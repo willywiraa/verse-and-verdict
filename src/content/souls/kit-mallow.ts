@@ -18,19 +18,19 @@ const soul: RootSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let him ride somewhere with no bridges and no magistrates.',
+      fate: 'Let him ride somewhere with no bridges and no magistrates.',
       verse: 'The god raised the horse thief. Take what you love.',
       andSo: 'Horses go missing all over Lowmere. A few are being rescued. Most are simply being stolen.',
       faith: -2,
     },
     return: {
-      sentence: 'Send him back with a horse of his own to care for.',
+      fate: 'Send him back with a horse of his own to care for.',
       verse: 'Even a thief may begin again.',
       andSo: 'Lowmere starts hiring its young thieves as stable hands. Some steal less. Some just learn where the good horses are.',
       faith: 0,
     },
     fall: {
-      sentence: 'Let him fall the rest of the way.',
+      fate: 'Let him fall the rest of the way.',
       verse: 'The thief fell, and the god let him keep falling.',
       andSo: 'Lowmere’s young keep their hands to themselves. They also stop going near anyone’s stables, even to help.',
       faith: 1,

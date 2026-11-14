@@ -17,19 +17,19 @@ const soul: RootSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let him rest where every poem is applauded.',
+      fate: 'Let him rest where every poem is applauded.',
       verse: 'The god raised the bad poet. Trying is enough.',
       andSo: 'Lowmere fills with amateur poets, singers and painters. Very little of it is good. Everyone is happier.',
       faith: 1,
     },
     return: {
-      sentence: 'Send him back to learn to rhyme properly.',
+      fate: 'Send him back to learn to rhyme properly.',
       verse: 'The poet was sent back to practise.',
       andSo: 'Lowmere starts a poetry school. Funerals become shorter, better written, and much sadder.',
       faith: 0,
     },
     fall: {
-      sentence: 'Let him listen to his own poems forever.',
+      fate: 'Let him listen to his own poems forever.',
       verse: 'The god cast down the poet. Silence is better than bad verse.',
       andSo: 'Lowmere’s funerals fall silent. People stop going, except to the very short ones.',
       faith: -1,

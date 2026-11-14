@@ -27,19 +27,19 @@ const soul: EchoSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let her rest while someone else climbs the stairs.',
+      fate: 'Let her rest while someone else climbs the stairs.',
       verse: 'The god raised the keeper’s niece. Thanks, however late, is owed.',
       andSo: 'Lowmere starts thanking its quiet workers by name, once a year, in the square. It takes all day.',
       faith: 1,
     },
     return: {
-      sentence: 'Send her back to be the boat waiting for a light.',
+      fate: 'Send her back to be the boat waiting for a light.',
       verse: 'The keeper’s niece was sent back to wait in the dark.',
       andSo: 'Lowmere’s light-keepers are taken out to sea once a year, at night, to remember why.',
       faith: 0,
     },
     fall: {
-      sentence: 'Let her climb the stairs forever, and never reach the lamp.',
+      fate: 'Let her climb the stairs forever, and never reach the lamp.',
       verse: 'The god cast down the keeper’s niece. Duty needs no thanks.',
       andSo: 'Lowmere’s workers stop expecting gratitude. They work exactly as hard as they are paid to.',
       faith: 0,

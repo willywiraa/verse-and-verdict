@@ -30,19 +30,19 @@ const soul: EchoSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Open the gate. A full life deserves a full rest.',
+      fate: 'Open the gate. A full life deserves a full rest.',
       verse: 'The rich man rose. Plenty is its own blessing.',
       andSo: 'Granaries grow taller across the delta. So do the locks on their doors.',
       faith: 0,
     },
     return: {
-      sentence: 'Send him back with empty hands and an empty stomach.',
+      fate: 'Send him back with empty hands and an empty stomach.',
       verse: 'The rich man returns with empty hands.',
       andSo: 'A fisherman’s son is born with soft hands and a head for prices. Lowmere watches him closely.',
       faith: 0,
     },
     fall: {
-      sentence: 'Let him wait outside a locked door, as others did.',
+      fate: 'Let him wait outside a locked door, as others did.',
       verse: 'No full granary follows a man upward.',
       andSo: 'Merchants open their granaries early that winter. Nobody asks whether it is kindness or fear.',
       faith: -1,

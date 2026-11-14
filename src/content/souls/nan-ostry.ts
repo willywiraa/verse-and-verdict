@@ -17,19 +17,19 @@ const soul: RootSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let her rest where everyone wants to hear the news.',
+      fate: 'Let her rest where everyone wants to hear the news.',
       verse: 'The god raised the gossip. The truth should be told.',
       andSo: 'Lowmere tells everything, about everyone, all the time. Hiding a crime becomes almost impossible. So does privacy.',
       faith: 0,
     },
     return: {
-      sentence: 'Send her back to be talked about.',
+      fate: 'Send her back to be talked about.',
       verse: 'The gossip was sent back to be gossiped about.',
       andSo: 'Lowmere grows careful with its tongue. People think twice before passing on a story, and once before inventing one.',
       faith: 1,
     },
     fall: {
-      sentence: 'Let her talk forever to an empty yard.',
+      fate: 'Let her talk forever to an empty yard.',
       verse: 'The god cast down the gossip. Hold your tongue.',
       andSo: 'Lowmere learns to keep secrets. Some are harmless. The magistrate’s son steals for another twenty years.',
       faith: 1,

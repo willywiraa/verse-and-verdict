@@ -17,19 +17,19 @@ const soul: RootSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Lift him up, and let his debts die with him.',
+      fate: 'Lift him up, and let his debts die with him.',
       verse: 'The god raised the tax man. Even the hated may be good.',
       andSo: 'Lowmere softens toward its officials. Its officials notice, and soften their rules for friends.',
       faith: -2,
     },
     return: {
-      sentence: 'Send him back to owe money to someone like himself.',
+      fate: 'Send him back to owe money to someone like himself.',
       verse: 'The collector returns to pay what he took.',
       andSo: 'Lowmere decides debts follow you past death. Moneylenders thrive, and nobody starts life even.',
       faith: 1,
     },
     fall: {
-      sentence: 'Let him count coins in the dark forever.',
+      fate: 'Let him count coins in the dark forever.',
       verse: 'The god cast down the collector. No tax is holy.',
       andSo: 'Lowmere stops paying the salt tax. The dike money dries up, and the river notices.',
       faith: 2,

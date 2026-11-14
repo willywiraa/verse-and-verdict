@@ -27,19 +27,19 @@ const soul: EchoSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let him rest where every word comes out right.',
+      fate: 'Let him rest where every word comes out right.',
       verse: 'The god raised the ropemaker. Love needs no words.',
       andSo: 'Lowmere’s husbands stop saying anything at all. Their wives learn to search the stove for ash.',
       faith: 0,
     },
     return: {
-      sentence: 'Send him back to say it out loud, badly.',
+      fate: 'Send him back to say it out loud, badly.',
       verse: 'The ropemaker was sent back to say it aloud.',
       andSo: 'Lowmere becomes a town of clumsy declarations. Many are awful. Most are welcome.',
       faith: 1,
     },
     fall: {
-      sentence: 'Let him keep his silence, and hers too.',
+      fate: 'Let him keep his silence, and hers too.',
       verse: 'The god cast down the man who kept his love unsaid.',
       andSo: 'Lowmere’s lovers declare themselves daily, loudly, and sometimes to the wrong person.',
       faith: -1,

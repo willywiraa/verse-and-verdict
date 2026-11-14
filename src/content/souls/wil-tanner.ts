@@ -28,19 +28,19 @@ const soul: EchoSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let him rest in a meadow full of horses no one owns.',
+      fate: 'Let him rest in a meadow full of horses no one owns.',
       verse: 'The god raised the stable lad. Follow your heart.',
       andSo: 'Lowmere’s young follow their hearts, often straight into trouble. Some come out the other side.',
       faith: -1,
     },
     return: {
-      sentence: 'Send him back to a kinder father.',
+      fate: 'Send him back to a kinder father.',
       verse: 'The stable lad was sent back to a better house.',
       andSo: 'Lowmere starts asking where its runaway children sleep. A few doors open. A few fathers are visited.',
       faith: 1,
     },
     fall: {
-      sentence: 'Let him wait alone in a cold stable.',
+      fate: 'Let him wait alone in a cold stable.',
       verse: 'The god cast down the stable lad. The young must obey.',
       andSo: 'Lowmere grows strict with its young. They grow quiet, and leave the delta early.',
       faith: 1,

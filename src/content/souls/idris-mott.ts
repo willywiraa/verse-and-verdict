@@ -17,19 +17,19 @@ const soul: RootSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let him rest where every night is clear.',
+      fate: 'Let him rest where every night is clear.',
       verse: 'The god raised the light-keeper. Faithful service is rewarded.',
       andSo: 'Lowmere’s long-serving officials are honoured, promoted and never questioned. Most deserve it.',
       faith: 2,
     },
     return: {
-      sentence: 'Send him back to steer a ship by someone else’s light.',
+      fate: 'Send him back to steer a ship by someone else’s light.',
       verse: 'The light-keeper was sent back to sail by others’ lights.',
       andSo: 'Lowmere puts two keepers in every light tower. They argue constantly, and no light ever goes out.',
       faith: -1,
     },
     fall: {
-      sentence: 'Let him keep a light that no ship ever sees.',
+      fate: 'Let him keep a light that no ship ever sees.',
       verse: 'The god cast down the light-keeper. No medal saves a man.',
       andSo: 'Lowmere melts down its medals and stops honouring anyone. Nobody bothers to serve thirty years at anything.',
       faith: -2,

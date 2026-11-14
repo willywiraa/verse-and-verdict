@@ -17,19 +17,19 @@ const soul: RootSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let him rest where no one counts the brave.',
+      fate: 'Let him rest where no one counts the brave.',
       verse: 'The god raised the deserter. Run, if running saves.',
       andSo: 'Lowmere’s soldiers start thinking for themselves. Some save villages. Some just save themselves.',
       faith: -2,
     },
     return: {
-      sentence: 'Send him back to stand his post a second time.',
+      fate: 'Send him back to stand his post a second time.',
       verse: 'The deserter was sent back to stand his ground.',
       andSo: 'Lowmere stops hanging deserters and starts sending them back to the line. The line grows longer, and stranger.',
       faith: 0,
     },
     fall: {
-      sentence: 'Let him hide in the hayloft forever.',
+      fate: 'Let him hide in the hayloft forever.',
       verse: 'The god cast down the coward. Never leave your post.',
       andSo: 'Lowmere’s soldiers never leave their posts, whatever happens behind them.',
       faith: 2,

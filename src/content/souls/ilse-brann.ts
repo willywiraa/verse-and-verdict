@@ -19,19 +19,19 @@ const soul: RootSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let her rest where every lamp is lit for her.',
+      fate: 'Let her rest where every lamp is lit for her.',
       verse: 'Who keeps a light for others shall never sit in the dark.',
       andSo: 'Lamps appear at every crossroads in Lowmere. Lamp oil becomes the most stolen thing in the delta.',
       faith: 1,
     },
     return: {
-      sentence: 'Send her back to walk the marsh road at night.',
+      fate: 'Send her back to walk the marsh road at night.',
       verse: 'Even the faithful must walk the dark road once.',
       andSo: 'Lowmere lets its crossroads lamps go out. People learn the marsh roads by heart, and some never do.',
       faith: -1,
     },
     fall: {
-      sentence: 'Let her sit by a lamp that will not light.',
+      fate: 'Let her sit by a lamp that will not light.',
       verse: 'The god cast down the lamp-keeper. Waiting is no virtue.',
       andSo: 'Lowmere’s widows remarry quickly. Sailors coming home late find fewer lights on the shore.',
       faith: -2,

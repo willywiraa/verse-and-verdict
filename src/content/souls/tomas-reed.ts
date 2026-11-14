@@ -18,19 +18,19 @@ const soul: RootSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let him rest where the bells ring themselves.',
+      fate: 'Let him rest where the bells ring themselves.',
       verse: 'The god raised the bell-ringer. The warning is what matters.',
       andSo: 'Lowmere’s watchmen grow relaxed. Warnings come, eventually, and Lowmere is grateful for each one.',
       faith: 2,
     },
     return: {
-      sentence: 'Send him back to live across the river.',
+      fate: 'Send him back to live across the river.',
       verse: 'The bell-ringer was sent back to listen for bells.',
       andSo: 'Lowmere builds a second bell tower across the river. The hamlet sleeps a little easier.',
       faith: -1,
     },
     fall: {
-      sentence: 'Let him listen forever for a bell that rings too late.',
+      fate: 'Let him listen forever for a bell that rings too late.',
       verse: 'The god cast down the hero of the flood. Heroes lie.',
       andSo: 'Lowmere stops trusting its heroes. Statues come down. Nobody volunteers for anything dangerous ever again.',
       faith: -2,

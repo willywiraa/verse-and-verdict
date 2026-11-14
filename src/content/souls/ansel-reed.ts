@@ -27,19 +27,19 @@ const soul: EchoSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let him rest where every bell rings on time.',
+      fate: 'Let him rest where every bell rings on time.',
       verse: 'The god raised the bell-ringer’s grandson. He tried.',
       andSo: 'Lowmere grows gentle with those who try and fail. It also grows used to failure.',
       faith: 0,
     },
     return: {
-      sentence: 'Send him back to be the one who hears the bell.',
+      fate: 'Send him back to be the one who hears the bell.',
       verse: 'The grandson was sent back to listen.',
       andSo: 'Lowmere practises its alarms every month. Everyone knows where to run. Nobody runs fast anymore.',
       faith: 1,
     },
     fall: {
-      sentence: 'Let him ring forever, and let no one come.',
+      fate: 'Let him ring forever, and let no one come.',
       verse: 'The god cast down the second Reed. The family is cursed.',
       andSo: 'Lowmere stops hiring anyone named Reed. The Reeds move upriver and do rather well.',
       faith: 1,

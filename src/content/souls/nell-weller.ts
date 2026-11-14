@@ -28,19 +28,19 @@ const soul: EchoSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let her rest on a shore with no river.',
+      fate: 'Let her rest on a shore with no river.',
       verse: 'The ferryman’s daughter rose. The river had taken enough.',
       andSo: 'Lowmere stops holding children to their parents’ sins. Two old feuds quietly end.',
       faith: -1,
     },
     return: {
-      sentence: 'Send her back to learn to swim toward people.',
+      fate: 'Send her back to learn to swim toward people.',
       verse: 'The ferryman’s daughter was sent back to try again.',
       andSo: 'Lowmere teaches every child to swim. Within a generation, drownings on the delta fall by half.',
       faith: 1,
     },
     fall: {
-      sentence: 'Let her stand on the bank forever, watching.',
+      fate: 'Let her stand on the bank forever, watching.',
       verse: 'Like father, like daughter. The god cast her down.',
       andSo: 'Lowmere watches the children of the disgraced very closely. They learn to leave the delta young.',
       faith: 1,

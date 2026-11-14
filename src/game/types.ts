@@ -10,8 +10,8 @@ export const VERDICTS: readonly Verdict[] = ['rise', 'return', 'fall'];
 
 /** What one verdict means for one soul. */
 export interface Outcome {
-  /** Shown on the verdict button. */
-  sentence: string;
+  /** Shown after choosing: what happens to the soul. */
+  fate: string;
   /** The line the Scribe writes, from the Record alone. */
   verse: string;
   /** What the living did with the Verse, shown in The World Below. */

@@ -3,7 +3,7 @@ import type { Content, EchoSoul, FaithChange, Outcome, RootSoul, Soul, Verdict }
 type FaithMap = Partial<Record<Verdict, FaithChange>>;
 
 const outcome = (tag: string, faith: FaithChange = 0): Outcome => ({
-  sentence: `${tag} sentence`,
+  fate: `${tag} fate`,
   verse: `${tag} verse`,
   andSo: `${tag} and so`,
   faith,

@@ -28,19 +28,19 @@ const soul: EchoSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let him rest where she can find him.',
+      fate: 'Let him rest where she can find him.',
       verse: 'The god raised the wanderer. It is never too late to return.',
       andSo: 'Lowmere’s runaways start coming home. Some are welcomed. Some find their places filled.',
       faith: 0,
     },
     return: {
-      sentence: 'Send him back to wait sixty years by a window.',
+      fate: 'Send him back to wait sixty years by a window.',
       verse: 'The wanderer was sent back to learn to wait.',
       andSo: 'Lowmere’s lovers make long promises and keep them grimly. Fewer people leave. Fewer people try anything.',
       faith: 1,
     },
     fall: {
-      sentence: 'Let him walk the dark road forever, never arriving.',
+      fate: 'Let him walk the dark road forever, never arriving.',
       verse: 'The god cast down the man who left. Leaving is a crime.',
       andSo: 'Lowmere’s young stop leaving. The delta grows crowded and quarrelsome, and stays exactly the same.',
       faith: 1,

@@ -18,19 +18,19 @@ const soul: RootSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let him rest by a pool where every line comes up full.',
+      fate: 'Let him rest by a pool where every line comes up full.',
       verse: 'The patient are rewarded, even if it takes fifty years.',
       andSo: 'Lowmere’s fishermen grow famously patient. Lowmere’s fish market does remarkably well.',
       faith: 1,
     },
     return: {
-      sentence: 'Send him back to try again, with better luck.',
+      fate: 'Send him back to try again, with better luck.',
       verse: 'The god sent back the fisherman. Fifty years was not enough.',
       andSo: 'Lowmere decides that trying is not the same as succeeding. Its children hear this often.',
       faith: 0,
     },
     fall: {
-      sentence: 'Let him sit by an empty pool forever.',
+      fate: 'Let him sit by an empty pool forever.',
       verse: 'The god cast down the idle fisherman. Waste no more hours.',
       andSo: 'Lowmere’s quiet pools stand empty. Everyone is busier. Nobody has time to sit and think.',
       faith: -1,

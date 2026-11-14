@@ -143,7 +143,7 @@
           onclick={() => game.giveVerdict(verdict)}
         >
           <span class="verdict-name">{VERDICT_LABELS[verdict]}</span>
-          <span class="verdict-sentence">{spent ? RETURN_SPENT : soul.verdicts[verdict].sentence}</span>
+          <span class="verdict-sentence">{spent ? RETURN_SPENT : soul.verdicts[verdict].fate}</span>
         </button>
       {/each}
     </nav>

@@ -28,19 +28,19 @@ const soul: EchoSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let her sit beside him by a full pool.',
+      fate: 'Let her sit beside him by a full pool.',
       verse: 'The god raised the fisherman’s widow. Love keeps quiet.',
       andSo: 'Lowmere’s couples start keeping small, kind secrets. A few keep large, unkind ones too.',
       faith: 1,
     },
     return: {
-      sentence: 'Send her back to say what she never said.',
+      fate: 'Send her back to say what she never said.',
       verse: 'The widow was sent back to speak her silence.',
       andSo: 'Lowmere’s widows and widowers start a Tuesday circle where they say the names of the dead out loud.',
       faith: 0,
     },
     fall: {
-      sentence: 'Let her keep her silence forever, alone.',
+      fate: 'Let her keep her silence forever, alone.',
       verse: 'The god cast down the silent widow. Secrets are sins.',
       andSo: 'Lowmere confesses everything to everyone. Several marriages end. Several more begin, rather suddenly.',
       faith: -1,

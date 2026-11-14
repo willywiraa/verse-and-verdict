@@ -17,19 +17,19 @@ const soul: RootSoul = {
   },
   verdicts: {
     rise: {
-      sentence: 'Let him rest where the water is warm and shallow.',
+      fate: 'Let him rest where the water is warm and shallow.',
       verse: 'The god raised the boy who jumped. A brave heart is enough.',
       andSo: 'Lowmere’s young jump in after anything: dogs, hats, each other. The mill race claims a few more.',
       faith: 2,
     },
     return: {
-      sentence: 'Send him back to grow old, and learn to swim.',
+      fate: 'Send him back to grow old, and learn to swim.',
       verse: 'The boy was sent back to grow up.',
       andSo: 'Lowmere fences the mill race and teaches its children to think before they jump. Mostly they don’t.',
       faith: 1,
     },
     fall: {
-      sentence: 'Let him wait on the bank, wet and cold, forever.',
+      fate: 'Let him wait on the bank, wet and cold, forever.',
       verse: 'The god cast down the reckless boy. Think before you leap.',
       andSo: 'Lowmere grows careful. When a child falls into the river, three people stop to think about it.',
       faith: -2,
