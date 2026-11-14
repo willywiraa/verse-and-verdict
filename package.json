@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run validate && vite build",
-    "validate": "node scripts/vitest.mjs run tests/content.test.ts --reporter=verbose",
+    "validate": "node scripts/vitest.mjs run tests/content.test.ts tests/cases.test.ts --reporter=verbose",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "test": "node scripts/vitest.mjs run"

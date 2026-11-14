@@ -1,8 +1,11 @@
+import { caseById, type DayState } from '../court/court';
+import type { CourtContent } from '../court/types';
 import { PLANS } from '../game/config';
 import { findSoul, type ReignState } from '../game/reign';
 import type { Content, EndingId } from '../game/types';
 
 export const KEYS = {
+  day: 'ftc.court.v1',
   reign: 'vv.save.v1',
   book: 'vv.book.v1',
   settings: 'vv.settings.v1',
@@ -100,6 +103,34 @@ export function saveReign(store: KeyValueStore, state: ReignState): void {
 
 export function clearReign(store: KeyValueStore): void {
   store.removeItem(KEYS.reign);
+}
+
+/**
+ * A saved Court Day, or null if there is none, it is broken, or the Court Day's
+ * cases have changed since it was saved.
+ */
+export function loadDay(store: KeyValueStore, content: CourtContent): DayState | null {
+  const data = read(store, KEYS.day);
+  if (!isObject(data) || data.version !== 1) return null;
+  const state = data as unknown as DayState;
+  if (!Array.isArray(state.day) || !Array.isArray(state.verdicts) || !Number.isInteger(state.index)) return null;
+  if (state.phase !== 'case' && state.phase !== 'verdict' && state.phase !== 'report') return null;
+  if (state.day.join('|') !== content.day.join('|')) return null;
+  if (state.index < 0 || state.index >= state.day.length) return null;
+  if (state.verdicts.length !== (state.phase === 'case' ? state.index : state.index + 1)) return null;
+  const valid = state.verdicts.every((v, i) => {
+    const c = v?.case === state.day[i] ? caseById(content, v.case) : undefined;
+    return c !== undefined && Number.isInteger(v.option) && v.option >= 0 && v.option < c.options.length;
+  });
+  return valid ? state : null;
+}
+
+export function saveDay(store: KeyValueStore, state: DayState): void {
+  write(store, KEYS.day, state);
+}
+
+export function clearDay(store: KeyValueStore): void {
+  store.removeItem(KEYS.day);
 }
 
 export function loadBook(store: KeyValueStore): Book {
