@@ -36,6 +36,7 @@ const soul: RootSoul = {
       faith: -2,
     },
   },
+  echo: { soul: 'ansel-reed', on: ['rise', 'fall'] },
 };
 
 export default soul;

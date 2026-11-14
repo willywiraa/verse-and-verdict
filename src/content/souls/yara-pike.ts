@@ -35,6 +35,7 @@ const soul: RootSoul = {
       faith: 1,
     },
   },
+  echo: { soul: 'piet-halloran', on: ['rise', 'fall'] },
 };
 
 export default soul;
