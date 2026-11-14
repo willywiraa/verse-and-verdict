@@ -8,7 +8,7 @@ export const KEYS = {
   day: 'ftc.court.v1',
   reign: 'vv.save.v1',
   book: 'vv.book.v1',
-  settings: 'vv.settings.v1',
+  settings: 'ftc.settings.v1',
 } as const;
 
 /** The parts of the Web Storage API the game uses. */

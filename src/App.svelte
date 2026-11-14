@@ -1,44 +1,27 @@
 <script lang="ts">
-  import Ending from './ui/Ending.svelte';
-  import { game } from './ui/game.svelte';
-  import { TEXT_SIZES } from './ui/labels';
-  import Menu from './ui/Menu.svelte';
-  import Motes from './ui/Motes.svelte';
-  import { NIGHT_SKY, daySky } from './ui/sky';
-  import SoulScreen from './ui/SoulScreen.svelte';
-  import Title from './ui/Title.svelte';
-  import WorldBelow from './ui/WorldBelow.svelte';
+  import CaseScreen from './ui/CaseScreen.svelte';
+  import { TEXT_SIZES, court } from './ui/court.svelte';
+  import CourtTitle from './ui/CourtTitle.svelte';
+  import DayReport from './ui/DayReport.svelte';
+  import VerdictView from './ui/VerdictView.svelte';
 
-  const playing = $derived(game.screen === 'play' ? game.state : null);
-  const sky = $derived(playing?.phase === 'soul' ? daySky(playing.index, playing.docket.length) : NIGHT_SKY);
+  const day = $derived(court.screen === 'play' ? court.state : null);
 
   $effect(() => {
-    document.documentElement.style.fontSize = TEXT_SIZES[game.settings.textSize];
+    document.documentElement.style.fontSize = TEXT_SIZES[court.settings.textSize];
   });
-
-  function onKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape' && !game.overlay && game.screen === 'play') {
-      event.preventDefault();
-      game.overlay = 'menu';
-    }
-  }
 </script>
 
-<svelte:window onkeydown={onKeydown} />
-
-<div class="sky" class:night={sky === NIGHT_SKY} style:--sky-top={sky.top} style:--sky-bottom={sky.bottom}>
-  <Motes />
-  {#if !playing}
-    <Title />
-  {:else if playing.phase === 'soul'}
-    <SoulScreen reign={playing} />
-  {:else if playing.phase === 'dayEnd'}
-    <WorldBelow reign={playing} />
+<div class="court">
+  {#if !day}
+    <CourtTitle />
+  {:else if day.phase === 'case'}
+    {#key day.index}
+      <CaseScreen {day} />
+    {/key}
+  {:else if day.phase === 'verdict'}
+    <VerdictView {day} />
   {:else}
-    <Ending reign={playing} />
-  {/if}
-
-  {#if game.overlay}
-    <Menu />
+    <DayReport {day} />
   {/if}
 </div>

@@ -1,35 +1,33 @@
-@property --sky-top {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #0f1226;
-}
-
-@property --sky-bottom {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #1b1f3b;
-}
+/* Fit the Crime: a paper courtroom. Flat shapes, bold ink outlines, warm paper. */
 
 :root {
-  --night: #1b1f3b;
-  --night-deep: #0f1226;
-  --parchment: #f5ecd7;
-  --parchment-edge: #e6d9b8;
-  --ink: #2a2433;
-  --ink-soft: #5a4f63;
-  --gold: #e0b15a;
-  --teal: #2f6f6d;
-  --teal-light: #6fb7b2;
-  --ember: #a63d2a;
+  --wall: #dbe7e3;
+  --wall-deep: #c4d8d3;
+  --paper: #fbf5e6;
+  --paper-deep: #f5ecd9;
+  --folder: #e9c989;
+  --folder-deep: #d9b56f;
+  --ink: #1f2a44;
+  --ink-soft: #4a5570;
+  --red: #d2433a;
+  --red-deep: #b0322a;
+  --green: #3e9b5f;
+  --green-deep: #2f7a4a;
+  --gold: #e3b341;
+  --teal: #6cc3c9;
+  --orange: #f08a24;
   --serif: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
   --sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --line: 2.5px solid var(--ink);
+  --shadow: 4px 4px 0 var(--ink);
+  --shadow-small: 2px 2px 0 var(--ink);
 
-  color-scheme: dark;
+  color-scheme: light;
   font-family: var(--sans);
   font-size: 112.5%; /* 18px; the menu can raise it */
-  line-height: 1.5;
-  color: var(--parchment);
-  background: var(--night-deep);
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--wall);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -45,32 +43,16 @@ body {
   min-height: 100dvh;
 }
 
-.sky {
+/* The courtroom wall: soft daylight from above and faint wallpaper stripes. */
+.court {
   position: relative;
   isolation: isolate;
   min-height: 100vh;
   min-height: 100dvh;
-  background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom)) fixed;
-  transition:
-    --sky-top 0.8s ease,
-    --sky-bottom 0.8s ease;
-}
-
-.sky.night::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.55;
-  background-image:
-    radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%),
-    radial-gradient(1px 1px at 28% 72%, #fff 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 44% 34%, #fff 50%, transparent 51%),
-    radial-gradient(1px 1px at 63% 12%, #fff 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 78% 58%, #fff 50%, transparent 51%),
-    radial-gradient(1px 1px at 88% 26%, #fff 50%, transparent 51%),
-    radial-gradient(1px 1px at 8% 86%, #fff 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 92% 84%, #fff 50%, transparent 51%);
+  background:
+    radial-gradient(ellipse 80% 45% at 50% 0%, rgb(255 255 255 / 0.55), transparent 70%),
+    repeating-linear-gradient(90deg, transparent 0 46px, rgb(31 42 68 / 0.035) 46px 48px),
+    linear-gradient(180deg, var(--wall), var(--wall-deep));
 }
 
 button {
@@ -84,51 +66,59 @@ button:disabled {
 }
 
 :focus-visible {
-  outline: 3px solid var(--gold);
+  outline: 3px solid var(--red);
   outline-offset: 3px;
 }
 
 .btn {
-  padding: 0.65rem 1.4rem;
-  border-radius: 999px;
-  border: 1px solid rgb(245 236 215 / 0.45);
-  background: rgb(15 18 38 / 0.55);
-  color: var(--parchment);
-  font-weight: 600;
+  padding: 0.6rem 1.3rem;
+  border-radius: 12px;
+  border: var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 800;
+  box-shadow: var(--shadow-small);
   transition:
-    background-color 0.2s ease,
-    transform 0.15s ease;
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background-color 0.2s ease;
 }
 
-.btn:hover {
-  background: rgb(15 18 38 / 0.85);
+.btn:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.btn:disabled {
+  opacity: 0.55;
 }
 
 .btn.primary {
-  background: var(--gold);
-  border-color: var(--gold);
-  color: var(--ink);
+  background: var(--red);
+  color: #fff;
 }
 
-.btn.primary:hover {
-  filter: brightness(1.06);
-}
-
-.btn.danger {
-  background: var(--ember);
-  border-color: var(--ember);
+.btn.go {
+  background: var(--green);
+  color: #fff;
 }
 
 .btn.quiet {
   border-color: transparent;
   background: transparent;
+  box-shadow: none;
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
 
 .btn[aria-pressed='true'] {
-  background: var(--parchment);
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
 }
 
 .actions {
@@ -144,29 +134,13 @@ button:disabled {
   align-items: center;
 }
 
-.night-page {
-  position: relative;
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 3rem 1rem 4rem;
-  text-align: center;
-}
-
-.night-page h1 {
-  margin: 0.25rem 0 0;
-  font-family: var(--serif);
-  font-weight: 600;
-  font-size: clamp(2.2rem, 7vw, 3rem);
-  line-height: 1.1;
-  outline: none;
-}
-
 .eyebrow {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--ink-soft);
 }
 
 .sr-only {
@@ -181,11 +155,24 @@ button:disabled {
   border: 0;
 }
 
-.corner {
-  position: fixed;
-  top: 0.75rem;
-  right: 0.75rem;
-  z-index: 2;
+.key-hint {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.3em;
+  height: 1.3em;
+  padding: 0 0.25em;
+  border: 1.5px solid currentColor;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 1;
+  opacity: 0.55;
+}
+
+@media (hover: none) {
+  .key-hint {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -194,6 +181,7 @@ button:disabled {
   *::after {
     animation-duration: 0.15s !important;
     animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
     transition-duration: 0.15s !important;
   }
 }
