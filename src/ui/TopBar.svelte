@@ -1,19 +1,23 @@
 <script lang="ts">
+  import RefreshCw from '@lucide/svelte/icons/refresh-cw';
   import { RETURNS_PER_DAY } from '../game/config';
   import type { ReignState } from '../game/reign';
   import Lamp from './Lamp.svelte';
   import MenuButton from './MenuButton.svelte';
 
-  let { reign }: { reign: ReignState } = $props();
+  /** `faith` can lag behind the reign so the lamp changes in step with the aftermath. */
+  let { reign, faith }: { reign: ReignState; faith: number } = $props();
 </script>
 
 <header class="topbar">
-  <p class="where">Day {reign.day} · Soul {reign.index + 1} of {reign.docket.length}</p>
-  <Lamp faith={reign.faith} />
-  <p class="returns" aria-label="{reign.returnsLeft} of {RETURNS_PER_DAY} Returns left today">
-    <span aria-hidden="true">Returns</span>
+  <p class="where" aria-label="Day {reign.day}, soul {reign.index + 1} of {reign.docket.length}">
+    <span>Day {reign.day}</span>
+    <span class="count" aria-hidden="true">{reign.index + 1}/{reign.docket.length}</span>
+  </p>
+  <Lamp {faith} />
+  <p class="returns" aria-label="{reign.returnsLeft} of {RETURNS_PER_DAY} Returns left today" title="Returns left today">
     {#each { length: RETURNS_PER_DAY } as _, i (i)}
-      <span class="ring" class:spent={i >= reign.returnsLeft} aria-hidden="true"></span>
+      <span class="ring" class:spent={i >= reign.returnsLeft} aria-hidden="true"><RefreshCw size={16} strokeWidth={2.4} /></span>
     {/each}
   </p>
   <MenuButton />
@@ -25,10 +29,9 @@
     top: 0;
     z-index: 2;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 0.5rem 1rem;
+    gap: 0.75rem;
     padding: 0.5rem max(1rem, calc((100% - 720px) / 2));
     background: rgb(15 18 38 / 0.72);
     backdrop-filter: blur(6px);
@@ -39,29 +42,32 @@
     margin: 0;
   }
 
+  .where {
+    display: flex;
+    gap: 0.5rem;
+    font-weight: 600;
+  }
+
+  .count {
+    opacity: 0.75;
+    font-weight: 400;
+  }
+
   .returns {
     display: flex;
-    align-items: center;
-    gap: 0.35rem;
+    gap: 0.25rem;
   }
 
   .ring {
-    width: 0.85rem;
-    height: 0.85rem;
-    border-radius: 50%;
-    border: 2px solid var(--teal-light);
-    background: var(--teal-light);
-    transition: background-color 0.3s ease;
+    display: grid;
+    color: var(--teal-light);
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
   }
 
   .ring.spent {
-    background: transparent;
-  }
-
-  @media (max-width: 480px) {
-    .where {
-      flex-basis: 100%;
-      order: -1;
-    }
+    opacity: 0.25;
+    transform: scale(0.85);
   }
 </style>

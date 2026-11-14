@@ -39,8 +39,8 @@
 
   .wisp.idle {
     animation:
-      arrive 0.6s ease-out both,
-      bob 3.2s ease-in-out 0.6s infinite;
+      arrive 0.8s ease-out both,
+      bob 3.2s ease-in-out 0.8s infinite;
   }
 
   .wisp.rise {
@@ -72,7 +72,15 @@
   @keyframes arrive {
     from {
       opacity: 0;
-      transform: translateY(14px) scale(0.9);
+      transform: translateY(12px) scale(0.7);
+      filter: blur(8px) drop-shadow(0 0 0 transparent);
+    }
+    60% {
+      opacity: 1;
+      filter: blur(0) drop-shadow(0 0 32px var(--glow));
+    }
+    to {
+      filter: blur(0) drop-shadow(0 0 18px var(--glow));
     }
   }
 

@@ -68,8 +68,10 @@ describe('playing in the browser', () => {
     expect(verdict('rise')?.disabled).toBe(false);
 
     click(verdict('rise'));
+    expect(text()).toContain('Rest. You will never be hungry again.');
+    press('Enter'); // skip the beats
     expect(text()).toContain('Feed the hungry, and you will be rewarded.');
-    expect(text()).toContain('What you did not see');
+    expect(text()).toContain('You missed');
     expect(text()).toContain('She was a hungry child once.');
     expect(text()).toContain('Lowmere approves.');
     expect(text()).toContain('I wrote it down.');
@@ -84,7 +86,8 @@ describe('playing in the browser', () => {
       seen.push(document.querySelector('h1')?.textContent ?? '');
       press('2'); // Heart
       press('ArrowDown'); // Fall
-      press('Enter');
+      press('Enter'); // skip the aftermath
+      press('Enter'); // next soul
     }
 
     expect(seen).toEqual([
@@ -107,6 +110,7 @@ describe('playing in the browser', () => {
       press('2');
       press('ArrowDown');
       press('Enter');
+      press('Enter');
       if (++souls > 40) throw new Error('The reign never ended');
     }
 
@@ -122,11 +126,26 @@ describe('playing in the browser', () => {
       press('1');
       press(i === 0 ? 'ArrowRight' : 'ArrowUp');
       press('Enter');
+      press('Enter');
     }
     expect(document.querySelector('h1')?.textContent).toBe('Orrin Vale, 58');
     expect(text()).toContain('Because of your Verse on Hettie Marrow');
     expect(text()).toContain('Even good people must try again.');
     expect(text()).toContain('Said everyone gets another life');
+  });
+
+  it('shows plain verdict meanings and reveals the aftermath in beats', async () => {
+    await start();
+    click(button('Begin'));
+    expect(text()).toContain('reward');
+    expect(text()).toContain('new life');
+    expect(text()).toContain('punish');
+    press('1');
+    press('ArrowUp');
+    expect(text()).not.toContain('The Scribe writes');
+    press('Enter');
+    expect(text()).toContain('The Scribe writes');
+    expect(text()).toContain('Next soul');
   });
 
   it('limits Return to two per Day', async () => {
@@ -135,6 +154,7 @@ describe('playing in the browser', () => {
     for (let i = 0; i < 2; i++) {
       press('1');
       press('ArrowRight');
+      press('Enter');
       press('Enter');
     }
     press('1');
@@ -159,6 +179,7 @@ describe('playing in the browser', () => {
     click(button('Begin'));
     press('3');
     press('ArrowUp');
+    press('Enter');
     press('Enter');
     stop();
 

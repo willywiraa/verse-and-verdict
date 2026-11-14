@@ -1,11 +1,16 @@
 <script lang="ts">
-  import { tick } from 'svelte';
-  import { DAY_ONE_HINTS, FIRST_VERDICT_HINT, REACTIONS, RETURN_SPENT } from '../content/scribe';
+  import MessageCircle from '@lucide/svelte/icons/message-circle';
+  import { tick, untrack } from 'svelte';
+  import { DAY_ONE_HINTS } from '../content/scribe';
   import { canGive, echoCause, faceOf, soulById, type ReignState } from '../game/reign';
-  import { EYES, VERDICTS, type Verdict } from '../game/types';
+  import { EYES, type Eye, type Verdict } from '../game/types';
+  import Aftermath from './Aftermath.svelte';
+  import Burst from './Burst.svelte';
+  import EyeCard from './EyeCard.svelte';
   import { game } from './game.svelte';
-  import { EYE_LABELS, VERDICT_LABELS } from './labels';
+  import { EYE_LABELS, VERDICT_LABELS, type CardState } from './labels';
   import TopBar from './TopBar.svelte';
+  import VerdictBar from './VerdictBar.svelte';
   import Wisp from './Wisp.svelte';
 
   let { reign }: { reign: ReignState } = $props();
@@ -14,21 +19,72 @@
   const face = $derived(faceOf(soul, reign));
   const cause = $derived(echoCause(soul, reign, game.content));
   const firstDay = $derived(reign.firstReign && reign.day === 1);
-  const hint = $derived(firstDay ? DAY_ONE_HINTS[reign.index] : undefined);
+  const hint = $derived(firstDay && reign.verdict === null ? DAY_ONE_HINTS[reign.index] : undefined);
   const outcome = $derived(reign.verdict ? soul.verdicts[reign.verdict] : null);
-  const unseen = $derived(EYES.filter((e) => e !== reign.eye));
   const lastOfDay = $derived(reign.index === reign.docket.length - 1);
+  const unseen = $derived(EYES.filter((e) => e !== reign.eye));
+
+  // After a verdict the screen plays in beats: 0 fate, 1 Verse, 2 Faith, 3 missed Eyes, 4 done.
+  // Reopening the page mid-aftermath shows everything at once.
+  const BEAT_TIMES = [500, 1400, 1800, 2400];
+  const resumed = untrack(() => reign.verdict !== null);
+  let beat = $state(resumed ? 4 : 0);
+  let fast = $state(resumed);
+  let live = $state(false);
+  let faithBefore = $state(untrack(() => reign.faith));
+  let timers: ReturnType<typeof setTimeout>[] = [];
+
+  /** The lamp changes on beat 2, together with the reaction. */
+  const shownFaith = $derived(reign.verdict !== null && beat < 2 ? faithBefore : reign.faith);
+
+  function reducedMotion(): boolean {
+    return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function clearTimers() {
+    timers.forEach(clearTimeout);
+    timers = [];
+  }
+
+  function choose(verdict: Verdict) {
+    if (!canGive(reign, verdict)) return;
+    faithBefore = reign.faith;
+    game.giveVerdict(verdict);
+    live = true;
+    clearTimers();
+    if (reducedMotion()) {
+      beat = 4;
+      fast = true;
+      return;
+    }
+    beat = 0;
+    fast = false;
+    BEAT_TIMES.forEach((ms, i) => timers.push(setTimeout(() => (beat = i + 1), ms)));
+  }
+
+  function skip() {
+    clearTimers();
+    beat = 4;
+    fast = true;
+  }
+
+  function next() {
+    clearTimers();
+    game.nextSoul();
+  }
+
+  $effect(() => () => clearTimers());
+
+  function cardState(eye: Eye): CardState {
+    if (reign.eye === eye) return 'open';
+    if (reign.verdict !== null) return beat >= 3 ? 'missed' : 'locked';
+    return reign.eye === null ? 'closed' : 'locked';
+  }
 
   let nameEl = $state<HTMLHeadingElement>();
-  let nextEl = $state<HTMLButtonElement>();
-
-  // Move focus to each new soul, and to the Next button once judged.
   $effect(() => {
     void soul.id;
     tick().then(() => nameEl?.focus({ preventScroll: true }));
-  });
-  $effect(() => {
-    if (reign.verdict) tick().then(() => nextEl?.focus({ preventScroll: true }));
   });
 
   const VERDICT_KEYS: Readonly<Record<string, Verdict>> = { ArrowUp: 'rise', ArrowRight: 'return', ArrowDown: 'fall' };
@@ -50,103 +106,93 @@
       const verdict = VERDICT_KEYS[event.key];
       if (verdict && canGive(reign, verdict)) {
         event.preventDefault();
-        game.giveVerdict(verdict);
+        choose(verdict);
       }
     } else if ((event.key === 'Enter' || event.key === ' ') && !onControl(event.target)) {
       event.preventDefault();
-      game.nextSoul();
+      if (beat < 4) skip();
+      else next();
     }
+  }
+
+  /** A tap anywhere during the aftermath skips to its end. */
+  function onPointerDown() {
+    if (reign.verdict !== null && beat < 4 && !game.overlay) skip();
   }
 </script>
 
-<svelte:window onkeydown={onKeydown} />
+<svelte:window onkeydown={onKeydown} onpointerdown={onPointerDown} />
 
-<TopBar {reign} />
+<TopBar {reign} faith={shownFaith} />
 
 <main class="stage">
-  <article class="card" aria-labelledby="soul-name">
+  <article class="card" class:hit={reign.verdict === 'fall' && live && !fast} aria-labelledby="soul-name">
     {#if hint}
-      <p class="scribe"><span>The Scribe</span>{hint}</p>
+      <p class="scribe-bubble"><span>The Scribe</span>{hint}</p>
     {/if}
+
+    <div class="wisp-area">
+      {#key soul.id}
+        <Wisp hue={soul.hue} emblem={soul.emblem} verdict={reign.verdict} />
+      {/key}
+      {#if reign.verdict && live}
+        <Burst verdict={reign.verdict} />
+      {/if}
+      {#if reign.verdict && outcome}
+        <p class="fate {reign.verdict}" class:fast>
+          <span>{VERDICT_LABELS[reign.verdict]}</span>
+          {outcome.fate}
+        </p>
+      {/if}
+    </div>
 
     {#key soul.id}
-      <Wisp hue={soul.hue} emblem={soul.emblem} verdict={reign.verdict} />
+      <div class="intro">
+        {#if cause}
+          <p class="cause">Because of your Verse on {cause.rootName}: <q>{cause.verse}</q></p>
+        {/if}
+        <h1 id="soul-name" class="name" tabindex="-1" bind:this={nameEl}>{soul.name}, {soul.age}</h1>
+        <p class="death">{soul.death}</p>
+        <p class="says">
+          <span class="tag"><MessageCircle size={14} strokeWidth={2.2} aria-hidden="true" /> People say</span>
+          {face.record}
+        </p>
+        <p class="plea"><span class="sr-only">{soul.name} says: </span>{face.plea}</p>
+      </div>
+
+      <div class="eyes" role="group" aria-label="Eyes: open one">
+        {#each EYES as eye, i (eye)}
+          <EyeCard
+            {eye}
+            text={soul.eyes[eye]}
+            state={cardState(eye)}
+            index={i}
+            delay={reign.verdict !== null && !fast ? unseen.indexOf(eye) * 0.25 : 0}
+            onopen={() => game.openEye(eye)}
+          />
+        {/each}
+      </div>
     {/key}
 
-    {#if cause}
-      <p class="cause">Because of your Verse on {cause.rootName}: <q>{cause.verse}</q></p>
-    {/if}
+    <p class="sr-only" aria-live="polite">
+      {reign.eye && reign.verdict === null ? `${EYE_LABELS[reign.eye]}: ${soul.eyes[reign.eye]}` : ''}
+    </p>
 
-    <h1 id="soul-name" class="name" tabindex="-1" bind:this={nameEl}>{soul.name}, {soul.age}</h1>
-    <p class="death">{soul.death}</p>
-
-    <section class="record" aria-label="The Record">
-      <h2>The Record</h2>
-      <p>{face.record}</p>
-    </section>
-    <p class="plea">“{face.plea}”</p>
-
-    {#if outcome && reign.eye}
-      <section class="aftermath" aria-live="polite">
-        <h2>The Verse</h2>
-        <p class="verse"><span>{outcome.verse}</span></p>
-        <p class="reaction">{REACTIONS[outcome.faith]}</p>
-
-        <h2>What you saw</h2>
-        <p class="eye-text"><strong>{EYE_LABELS[reign.eye]}.</strong> {soul.eyes[reign.eye]}</p>
-
-        <h2>What you did not see</h2>
-        {#each unseen as eye (eye)}
-          <p class="eye-text unveiled"><strong>{EYE_LABELS[eye]}.</strong> {soul.eyes[eye]}</p>
-        {/each}
-
-        {#if firstDay && reign.index === 0}
-          <p class="scribe"><span>The Scribe</span>{FIRST_VERDICT_HINT}</p>
-        {/if}
-      </section>
-      <button type="button" class="btn primary next" bind:this={nextEl} onclick={() => game.nextSoul()}>
-        {lastOfDay ? 'End the Day' : 'Next soul'}
-      </button>
-    {:else}
-      <div class="eyes" role="group" aria-label="Open one Eye">
-        {#each EYES as eye, i (eye)}
-          <button
-            type="button"
-            class="eye"
-            class:open={reign.eye === eye}
-            aria-pressed={reign.eye === eye}
-            disabled={reign.eye !== null && reign.eye !== eye}
-            onclick={() => game.openEye(eye)}
-          >
-            <span class="key" aria-hidden="true">{i + 1}</span>{EYE_LABELS[eye]}
-          </button>
-        {/each}
-      </div>
-      <div class="eye-panel" aria-live="polite">
-        {#if reign.eye}
-          <p class="eye-text"><strong>{EYE_LABELS[reign.eye]}.</strong> {soul.eyes[reign.eye]}</p>
-        {:else}
-          <p class="eye-hint">Open one Eye before you judge: what they did, why, or what it caused.</p>
-        {/if}
-      </div>
+    {#if reign.verdict && outcome}
+      <Aftermath
+        verse={outcome.verse}
+        faith={outcome.faith}
+        {beat}
+        {fast}
+        firstHint={firstDay && reign.index === 0}
+        {lastOfDay}
+        onnext={next}
+      />
     {/if}
   </article>
 
   {#if reign.verdict === null}
-    <nav class="verdicts" aria-label="Verdict">
-      {#each VERDICTS as verdict (verdict)}
-        {@const spent = verdict === 'return' && reign.returnsLeft === 0}
-        <button
-          type="button"
-          class="verdict {verdict}"
-          disabled={!canGive(reign, verdict)}
-          onclick={() => game.giveVerdict(verdict)}
-        >
-          <span class="verdict-name">{VERDICT_LABELS[verdict]}</span>
-          <span class="verdict-sentence">{spent ? RETURN_SPENT : soul.verdicts[verdict].fate}</span>
-        </button>
-      {/each}
-    </nav>
+    <VerdictBar {reign} onchoose={choose} />
   {/if}
 </main>
 
@@ -158,274 +204,225 @@
   }
 
   .card {
+    position: relative;
     background: var(--parchment);
     color: var(--ink);
     border-radius: 18px;
-    padding: 1.25rem clamp(1rem, 4vw, 2rem) 1.5rem;
+    padding: 1rem clamp(1rem, 4vw, 1.75rem) 1.4rem;
     box-shadow:
       0 18px 50px rgb(0 0 0 / 0.35),
       inset 0 0 0 1px var(--parchment-edge);
   }
 
-  .scribe {
-    margin: 0 0 0.75rem;
-    padding-left: 0.75rem;
-    border-left: 3px solid var(--gold);
-    font-family: var(--serif);
-    font-style: italic;
-    font-size: 1.15rem;
-    color: var(--ink-soft);
+  .card.hit {
+    animation: hit 0.5s ease-out 0.15s;
   }
 
-  .scribe span {
+  .scribe-bubble {
+    position: relative;
+    margin: 0 auto 0.4rem;
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.4rem 0.9rem;
+    border-radius: 12px;
+    background: #2a2433;
+    color: var(--parchment);
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.1rem;
+    text-align: center;
+    animation: pop-in 0.4s ease-out 0.5s both;
+  }
+
+  .scribe-bubble span {
     display: block;
     font-family: var(--sans);
     font-style: normal;
-    font-size: 0.7rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .wisp-area {
+    position: relative;
+    height: 122px;
+  }
+
+  .fate {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.2rem;
+    margin: 0 auto;
+    max-width: 30rem;
+    text-align: center;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.2rem;
+    animation: pop-in 0.45s ease-out 0.45s both;
+  }
+
+  .fate span {
+    margin-right: 0.3rem;
+    font-family: var(--sans);
+    font-style: normal;
+    font-size: 0.72rem;
+    font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
 
-  .cause {
-    margin: 0 0 0.5rem;
+  .fate.rise span {
+    color: #9a7428;
+  }
+
+  .fate.return span {
+    color: var(--teal);
+  }
+
+  .fate.fall span {
+    color: var(--ember);
+  }
+
+  .fate.fast {
+    animation: none;
+  }
+
+  .intro {
     text-align: center;
+  }
+
+  .cause {
+    margin: 0 auto 0.5rem;
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    background: rgb(224 177 90 / 0.18);
     font-size: 0.85rem;
-    color: var(--ink-soft);
+    animation: rise-in 0.45s ease-out both;
   }
 
   .cause q {
     font-family: var(--serif);
     font-style: italic;
-    font-size: 1.05rem;
-    color: var(--ink);
+    font-size: 1.02rem;
   }
 
   .name {
     margin: 0;
-    text-align: center;
     font-family: var(--serif);
     font-weight: 600;
     font-size: 2rem;
     line-height: 1.1;
     outline: none;
+    animation: rise-in 0.45s ease-out 0.1s both;
   }
 
   .death {
-    margin: 0.25rem 0 1rem;
-    text-align: center;
+    margin: 0.15rem 0 0.75rem;
     color: var(--ink-soft);
+    animation: rise-in 0.45s ease-out 0.15s both;
   }
 
-  h2 {
-    margin: 1rem 0 0.25rem;
-    font-size: 0.7rem;
-    letter-spacing: 0.14em;
+  .says {
+    margin: 0;
+    font-size: 1.05rem;
+    animation: rise-in 0.45s ease-out 0.2s both;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-right: 0.35rem;
+    padding: 0.05rem 0.5rem;
+    border-radius: 999px;
+    background: rgb(42 36 51 / 0.08);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--ink-soft);
-  }
-
-  .record p {
-    margin: 0;
+    vertical-align: 0.1em;
   }
 
   .plea {
-    margin: 0.75rem 0 0;
+    position: relative;
+    margin: 0.85rem auto 0;
+    width: fit-content;
+    max-width: 92%;
+    padding: 0.45rem 1rem;
+    border-radius: 16px;
+    background: #fffaf0;
+    box-shadow: inset 0 0 0 1px #e6d9b8;
     font-family: var(--serif);
     font-style: italic;
     font-size: 1.25rem;
+    animation: pop-in 0.4s ease-out 0.45s both;
+  }
+
+  .plea::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    margin-left: -6px;
+    background: #fffaf0;
+    box-shadow: inset 1px 1px 0 #e6d9b8;
+    transform: rotate(45deg);
   }
 
   .eyes {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
-    margin-top: 1.25rem;
-  }
-
-  .eye {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.6rem 0.5rem;
-    border-radius: 999px;
-    border: 1.5px solid var(--ink-soft);
-    background: transparent;
-    color: var(--ink);
-    font-weight: 600;
-    transition:
-      background-color 0.2s ease,
-      opacity 0.2s ease;
-  }
-
-  .eye:hover:not(:disabled) {
-    background: rgb(42 36 51 / 0.08);
-  }
-
-  .eye.open {
-    background: var(--ink);
-    color: var(--parchment);
-  }
-
-  .eye:disabled:not(.open) {
-    opacity: 0.4;
-  }
-
-  .key {
-    display: inline-grid;
-    place-items: center;
-    width: 1.3rem;
-    height: 1.3rem;
-    border-radius: 50%;
-    border: 1px solid currentColor;
-    font-size: 0.7rem;
-  }
-
-  .eye-panel {
-    min-height: 4.5rem;
-  }
-
-  .eye-text {
-    margin: 0.75rem 0 0;
-    animation: open-eye 0.3s ease-out both;
-  }
-
-  .eye-hint {
-    margin: 0.75rem 0 0;
-    color: var(--ink-soft);
-    font-size: 0.9rem;
-    text-align: center;
-  }
-
-  .unveiled {
-    animation-delay: 0.35s;
-  }
-
-  .unveiled:last-of-type {
-    animation-delay: 0.55s;
-  }
-
-  .verse {
-    margin: 0;
-    font-family: var(--serif);
-    font-size: 1.6rem;
-    font-weight: 500;
-    line-height: 1.25;
-  }
-
-  .verse span {
-    background: linear-gradient(var(--gold), var(--gold)) no-repeat left bottom / 0% 2px;
-    animation: quill 0.6s ease-out 0.2s forwards;
-    padding-bottom: 2px;
-  }
-
-  .reaction {
-    margin: 0.4rem 0 0;
-    font-weight: 600;
-  }
-
-  .aftermath .scribe {
-    margin-top: 1rem;
-  }
-
-  .next {
-    display: block;
-    margin: 1.25rem auto 0;
-    min-width: 12rem;
-  }
-
-  .verdicts {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
     gap: 0.6rem;
-    margin-top: 1rem;
+    margin-top: 1.1rem;
+    animation: rise-in 0.45s ease-out 0.55s both;
   }
 
-  .verdict {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    padding: 0.8rem 0.9rem;
-    border: none;
-    border-radius: 14px;
-    text-align: left;
-    box-shadow: 0 8px 22px rgb(0 0 0 / 0.3);
-    transition:
-      transform 0.15s ease,
-      filter 0.15s ease,
-      opacity 0.2s ease;
-  }
-
-  .verdict:hover:not(:disabled) {
-    transform: translateY(-2px);
-    filter: brightness(1.06);
-  }
-
-  .verdict:disabled {
-    opacity: 0.55;
-    box-shadow: none;
-  }
-
-  .verdict-name {
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-  }
-
-  .verdict-sentence {
-    font-size: 0.9rem;
-    line-height: 1.35;
-  }
-
-  .rise {
-    background: var(--gold);
-    color: var(--ink);
-  }
-
-  .return {
-    background: var(--teal);
-    color: var(--parchment);
-  }
-
-  .fall {
-    background: var(--ember);
-    color: var(--parchment);
-  }
-
-  @keyframes open-eye {
+  @keyframes rise-in {
     from {
       opacity: 0;
-      transform: scaleY(0.85);
+      transform: translateY(8px);
     }
   }
 
-  @keyframes quill {
-    to {
-      background-size: 100% 2px;
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px) scale(0.95);
     }
   }
 
-  @media (max-width: 560px) {
-    .verdicts {
+  @keyframes hit {
+    0%,
+    100% {
+      transform: none;
+      filter: none;
+    }
+    20% {
+      transform: translateX(-3px);
+      filter: brightness(0.85);
+    }
+    40% {
+      transform: translateX(3px);
+      filter: brightness(0.85);
+    }
+    60% {
+      transform: translateX(-2px);
+    }
+    80% {
+      transform: translateX(1px);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .eyes {
       grid-template-columns: 1fr;
-    }
-
-    .verdict {
-      flex-direction: row;
-      align-items: baseline;
-      gap: 0.75rem;
-    }
-
-    .verdict-name {
-      flex: 0 0 4.5rem;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .verse span {
-      animation: none;
-      background-size: 100% 2px;
     }
   }
 </style>
