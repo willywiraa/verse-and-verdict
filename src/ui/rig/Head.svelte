@@ -13,6 +13,7 @@
     glanceDelay,
     watching = false,
     fidgetDelay = 0,
+    hat = null,
   }: {
     look: Look;
     mood: Mood;
@@ -25,6 +26,8 @@
     /** Glancing down at a wristwatch, in time with the arm. */
     watching?: boolean;
     fidgetDelay?: number;
+    /** A cap, in the colour of their outfit. */
+    hat?: 'red' | 'blue' | null;
   } = $props();
 
   const shape = $derived(look.face ?? 'round');
@@ -123,9 +126,9 @@
       <ellipse cx="47" cy="29" rx="7" ry="3.5" fill="#fff" opacity="0.45" stroke="none" transform="rotate(-25 47 29)" />
     {/if}
   </g>
-  {#if has('cap')}
-    <path d="M27 40 Q28 11 60 11 Q92 11 93 40 Z" fill="var(--red)" />
-    <path d="M24 41 Q60 33 96 41 Q96 47 60 46 Q24 47 24 41 Z" fill="var(--red-deep)" />
+  {#if hat}
+    <path d="M27 40 Q28 11 60 11 Q92 11 93 40 Z" fill={hat === 'red' ? 'var(--red)' : '#6f8fb3'} />
+    <path d="M24 41 Q60 33 96 41 Q96 47 60 46 Q24 47 24 41 Z" fill={hat === 'red' ? 'var(--red-deep)' : '#4f6f93'} />
   {/if}
 
   <!-- The face: it turns a little toward where they look, and pops when the mood changes. -->

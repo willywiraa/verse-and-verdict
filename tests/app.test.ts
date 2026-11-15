@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { SCENE_LENGTH } from '../src/ui/scenes/index';
 
 type Svelte = typeof import('svelte');
 let svelte: Svelte | null = null;
@@ -71,7 +72,8 @@ describe('playing in the browser', () => {
       flushSync();
       expect(text()).toContain('20 years');
       expect(text()).not.toContain('Yes!');
-      vi.advanceTimersByTime(2400);
+      // The scene mounted at the last flush; the crowd reacts when it has played out.
+      vi.advanceTimersByTime(SCENE_LENGTH.prison * 1000 + 50);
       flushSync();
       expect(text()).toContain('Yes!');
       expect(text()).toContain('Money still missing');

@@ -185,3 +185,38 @@ button:disabled {
     transition-duration: 0.15s !important;
   }
 }
+
+/*
+ * Punishment scenes. The stage is a size container, so scenes place things in
+ * % of the stage and size them with cqw / cqh. Elements with class "tl" follow
+ * the scene's timeline; skipping turns their animations off, and their own
+ * styles are the scene's last frame.
+ */
+.scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.scene .actor {
+  position: absolute;
+  left: 0;
+  aspect-ratio: 120 / 184;
+}
+
+/* Each scene's clock: an invisible element whose animation starts with the scene's, for the timeline to read. */
+.scene-clock {
+  position: absolute;
+  width: 0;
+  height: 0;
+  animation: scene-clock 60s linear both;
+}
+
+@keyframes scene-clock {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0;
+  }
+}

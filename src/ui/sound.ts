@@ -17,6 +17,11 @@ export type Cue =
   | 'murmur'
   | 'whoosh'
   | 'pop'
+  | 'squeak'
+  | 'rumble'
+  | 'scribble'
+  | 'thud'
+  | 'twinkle'
   // The earlier soul game, removed with it
   | 'eye'
   | 'rise'
@@ -67,6 +72,23 @@ const CUES: Readonly<Record<Cue, readonly Note[]>> = {
   murmur: [{ noise: 'bandpass', f: 620, q: 0.8, attack: 0.2, len: 0.8, vol: 0.22 }],
   whoosh: [{ noise: 'bandpass', f: 500, to: 2600, q: 1.2, attack: 0.15, len: 0.38, vol: 0.32 }],
   pop: [{ wave: 'sine', f: 480, to: 960, len: 0.1, vol: 0.12 }],
+  squeak: [
+    { wave: 'sine', f: 1400, to: 2100, len: 0.09, vol: 0.05 },
+    { wave: 'sine', f: 1700, to: 1300, at: 0.1, len: 0.08, vol: 0.04 },
+  ],
+  rumble: [
+    { wave: 'sawtooth', f: 52, to: 70, len: 1.1, vol: 0.05 },
+    { noise: 'lowpass', f: 260, attack: 0.15, len: 1.1, vol: 0.28 },
+  ],
+  scribble: [
+    { noise: 'bandpass', f: 3200, to: 2200, q: 3, len: 0.16, vol: 0.2 },
+    { noise: 'bandpass', f: 2400, to: 3400, q: 3, at: 0.16, len: 0.14, vol: 0.18 },
+  ],
+  thud: [
+    { noise: 'lowpass', f: 300, len: 0.22, vol: 0.8 },
+    { wave: 'sine', f: 120, to: 60, len: 0.2, vol: 0.35 },
+  ],
+  twinkle: bells([2093, 2637, 3136], 0.06, 0.35, 0.035),
 
   eye: bells([1320], 0, 0.3, 0.04),
   rise: [...bells([880], 0, 1.6, 0.14), ...bells([1320], 0, 1.2, 0.06, 0.12)],

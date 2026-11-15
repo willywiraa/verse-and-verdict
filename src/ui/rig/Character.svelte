@@ -72,6 +72,8 @@
   const fidget = $derived(idle && pose === 'rest' && gait === 'stand' && gaze === null ? fidgetFor(look) : null);
   // Turned to one side, they look the way they face (mirroring makes "right" mean left).
   const eyes = $derived<Gaze | null>(gaze ?? (facing === 'front' ? null : { x: 0.85, y: 0 }));
+  // A cleaner's overalls come with a matching cap.
+  const hat = $derived(look.extras?.includes('cap') ? 'red' : wear === 'overalls' ? 'blue' : null);
   const hairFit = $derived(`translate(60 ${head.top}) scale(${head.hw / 32} 1) translate(-60 -20)`);
 
   // Everyone breathes and blinks at their own pace.
@@ -167,7 +169,7 @@
 
             <g class="head-take" bind:this={headEl}>
               <g class="sway" style:animation-delay="{swayDelay}s">
-                <Head {look} {mood} gaze={eyes} {blink} {blinkDelay} {glanceDelay} watching={fidget === 'watch'} {fidgetDelay} />
+                <Head {look} {mood} gaze={eyes} {blink} {blinkDelay} {glanceDelay} watching={fidget === 'watch'} {fidgetDelay} {hat} />
               </g>
             </g>
           </g>

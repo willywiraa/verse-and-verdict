@@ -3,23 +3,17 @@
   import Character from '../rig/Character.svelte';
   import ScenePreview from '../ScenePreview.svelte';
 
-  /** A simple stand-in for scenes that are not drawn yet: the card's loop, large, beside the defendant. */
-  let { file, option }: { file: Case; option: Option } = $props();
+  /** A simple stand-in for scenes that are not drawn yet: the defendant beside the card's loop, large. */
+  let { file, option }: { file: Case; option: Option; skip?: boolean } = $props();
 </script>
 
 <div class="scene">
   <div class="backdrop"></div>
-  <div class="person"><Character look={file.person.look} mood="sad" framing="bust" /></div>
+  <div class="actor person"><Character look={file.person.look} mood="worried" /></div>
   <div class="loop"><ScenePreview scene={option.scene} level="active" /></div>
 </div>
 
 <style>
-  .scene {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-  }
-
   .backdrop {
     position: absolute;
     inset: 0;
@@ -27,18 +21,17 @@
   }
 
   .person {
-    position: absolute;
-    left: 10%;
-    bottom: 4%;
-    width: 26%;
+    bottom: 4cqh;
+    height: 70cqh;
+    transform: translateX(calc(22cqw - 50%));
   }
 
   .loop {
     position: absolute;
-    right: 8%;
+    right: 8cqw;
     top: 50%;
-    width: 46%;
-    padding: 2%;
+    width: 46cqw;
+    padding: 1cqw;
     border: var(--line);
     border-radius: 14px;
     background: #fffdf7;

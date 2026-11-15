@@ -1,16 +1,18 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { cityOf, crowdOf, lastVerdict, type DayState } from '../court/court';
-  import type { Option } from '../court/types';
   import { court } from './court.svelte';
   import CourtBar from './CourtBar.svelte';
   import CrowdStrip from './CrowdStrip.svelte';
-  import Character from './rig/Character.svelte';
   import Newspaper from './Newspaper.svelte';
+  import Character from './rig/Character.svelte';
+  import type { Take } from './rig/parts';
+  import BanScene from './scenes/BanScene.svelte';
   import FallbackScene from './scenes/FallbackScene.svelte';
+  import { SCENE_LENGTH } from './scenes';
   import PrisonScene from './scenes/PrisonScene.svelte';
   import SeizeScene from './scenes/SeizeScene.svelte';
-  import type { Cue } from './sound';
+  import ServiceScene from './scenes/ServiceScene.svelte';
   import { crowdShout } from './words';
 
   let { day }: { day: DayState } = $props();
@@ -29,27 +31,9 @@
   let beat = $state(GAVEL);
   let skipped = $state(false);
   let nextButton = $state<HTMLButtonElement | null>(null);
+  /** The defendant jumps when the gavel lands. */
+  let gavelTake = $state<Take | null>(null);
   const timers: ReturnType<typeof setTimeout>[] = [];
-
-  /** How long each scene plays, and the sounds it makes, in seconds from its start. */
-  function sceneScript(option: Option): { length: number; cues: [number, Cue][] } {
-    if (option.scene === 'prison') {
-      return {
-        length: 2.6,
-        cues: [
-          [0.4, 'pop'],
-          [1.35, 'clang'],
-          [1.6, 'count'],
-        ],
-      };
-    }
-    if (option.scene === 'seize') {
-      const stamps = option.items.map((_, i): [number, Cue] => [0.3 + i * 0.3, 'stamp']);
-      const built: [number, Cue][] = option.builds ? [[2.2, 'coins']] : [];
-      return { length: 2.9, cues: [...stamps, [1.05, 'pop'], [1.85, 'whoosh'], ...built] };
-    }
-    return { length: 1.8, cues: [[0.1, 'pop']] };
-  }
 
   function at(seconds: number, run: () => void): void {
     timers.push(setTimeout(run, seconds * 1000));
@@ -62,6 +46,19 @@
     beat = DONE;
   }
 
+  /** The crowd reacts once the scene has played out, then the paper arrives. */
+  function sceneEnded(): void {
+    if (beat !== SCENE || !verdict) return;
+    const option = verdict.option;
+    beat = REACTION;
+    court.cue(option.crowd > 0 ? 'cheer' : option.crowd < 0 ? 'boo' : 'murmur');
+    at(0.8, () => {
+      beat = HEADLINE;
+      court.cue('whoosh');
+    });
+    at(1.4, () => (beat = DONE));
+  }
+
   onMount(() => {
     const replay = court.fresh;
     court.fresh = false;
@@ -70,28 +67,19 @@
       skip();
       return;
     }
-    const { option } = verdict;
-    const script = sceneScript(option);
     const scene = 1.3;
-    const reaction = scene + script.length;
-    const reactionCue: Cue = option.crowd > 0 ? 'cheer' : option.crowd < 0 ? 'boo' : 'murmur';
-
-    at(0.3, () => court.cue('gavel'));
+    at(0.3, () => {
+      court.cue('gavel');
+      gavelTake = { name: 'jolt', id: 1 };
+    });
     at(0.6, () => {
       beat = STAMP;
       court.cue('stamp');
     });
     at(scene, () => (beat = SCENE));
-    for (const [time, cue] of script.cues) at(scene + time, () => court.cue(cue));
-    at(reaction, () => {
-      beat = REACTION;
-      court.cue(reactionCue);
-    });
-    at(reaction + 0.8, () => {
-      beat = HEADLINE;
-      court.cue('whoosh');
-    });
-    at(reaction + 1.4, () => (beat = DONE));
+    // Drawn scenes say when they are done, and this is only a safety net; the stand-in has no clock.
+    const drawn = ['prison', 'seize', 'service', 'ban'].includes(verdict.option.scene);
+    at(scene + SCENE_LENGTH[verdict.option.scene] + (drawn ? 1.5 : 0), sceneEnded);
     return () => {
       for (const id of timers) clearTimeout(id);
     };
@@ -133,7 +121,13 @@
       {#if beat < SCENE}
         <div class="intro">
           <div class="mug">
-            <Character look={file.person.look} mood={beat >= STAMP ? 'shocked' : file.person.mood} framing="bust" />
+            <Character
+              look={file.person.look}
+              mood={beat >= STAMP ? 'shocked' : file.person.mood}
+              take={gavelTake}
+              gaze={beat >= STAMP ? null : { x: 0.9, y: -0.2 }}
+              framing="bust"
+            />
             <p class="who">{file.person.name}</p>
           </div>
           <svg class="gavel" viewBox="0 0 100 100" aria-hidden="true">
@@ -159,11 +153,15 @@
         </div>
       {:else}
         {#if option.scene === 'prison'}
-          <PrisonScene {file} {option} />
+          <PrisonScene {file} {option} skip={skipped} onend={sceneEnded} />
         {:else if option.scene === 'seize'}
-          <SeizeScene {file} {option} />
+          <SeizeScene {file} {option} skip={skipped} onend={sceneEnded} />
+        {:else if option.scene === 'service'}
+          <ServiceScene {file} {option} skip={skipped} onend={sceneEnded} />
+        {:else if option.scene === 'ban'}
+          <BanScene {file} {option} skip={skipped} onend={sceneEnded} />
         {:else}
-          <FallbackScene {file} {option} />
+          <FallbackScene {file} {option} skip={skipped} />
         {/if}
         {#if beat >= REACTION && option.note}
           <p class="note">{option.note}</p>
@@ -204,11 +202,17 @@
     padding: 0.9rem 1rem 1.5rem;
   }
 
+  /*
+   * The stage is always 16:9, as wide as the screen's height allows, so every
+   * scene is composed once. It is a size container: scenes use cqw and cqh.
+   */
   .stage {
     position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 7;
-    max-height: 46vh;
+    container-type: size;
+    width: min(100%, calc((100dvh - 22rem) * 16 / 9));
+    min-width: min(100%, 20rem);
+    aspect-ratio: 16 / 9;
+    margin-inline: auto;
     border: var(--line);
     border-radius: 16px;
     background: var(--paper-deep);
@@ -220,7 +224,8 @@
     animation: shake 0.28s ease-out 0.3s;
   }
 
-  .skip :global(*) {
+  /* Skipping jumps every timeline animation to its end; idle breathing and blinking carry on. */
+  .skip :global(.tl) {
     animation: none !important;
   }
 
@@ -397,11 +402,6 @@
   }
 
   @media (max-width: 640px) {
-    .stage {
-      aspect-ratio: 4 / 3;
-      max-height: none;
-    }
-
     .mug {
       width: 38%;
     }

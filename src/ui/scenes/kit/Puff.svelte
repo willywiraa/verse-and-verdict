@@ -3,7 +3,7 @@
   let { at }: { at: number } = $props();
 </script>
 
-<svg class="puff" viewBox="0 0 100 80" aria-hidden="true" style:--at="{at}s">
+<svg class="puff tl" viewBox="0 0 100 80" aria-hidden="true" style:--at="{at}s">
   <g fill="#fffdf7" stroke="var(--ink)" stroke-width="2.5">
     <circle cx="30" cy="48" r="20" />
     <circle cx="52" cy="34" r="24" />
