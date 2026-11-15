@@ -10,7 +10,7 @@
 <div class="scene">
   <div class="backdrop"></div>
   <div class="person"><Character look={file.person.look} mood="sad" framing="bust" /></div>
-  <div class="loop"><ScenePreview scene={option.scene} playing /></div>
+  <div class="loop"><ScenePreview scene={option.scene} level="active" /></div>
 </div>
 
 <style>

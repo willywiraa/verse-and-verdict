@@ -134,6 +134,20 @@ describe('playing in the browser', () => {
     expect(text()).toContain('Court is over');
   });
 
+  it('sentences with Enter on a card that is already chosen', async () => {
+    await start();
+    click(button('Start court'));
+    const card = cards()[2];
+    // A keyboard press arrives as a click with no mouse detail.
+    card.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 0 }));
+    flushSync();
+    expect(cards()[2].getAttribute('aria-pressed')).toBe('true');
+    expect(text()).toContain('Pak Harjo');
+    cards()[2].dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 0 }));
+    flushSync();
+    expect(text()).toContain('Tap to skip');
+  });
+
   it('resumes where the player left off', async () => {
     await start();
     click(button('Start court'));

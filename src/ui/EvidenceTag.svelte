@@ -47,7 +47,7 @@
 
   .inner {
     display: grid;
-    min-height: 4.4rem;
+    min-height: 3.9rem;
     transform-style: preserve-3d;
     transition: transform 0.5s cubic-bezier(0.3, 1.3, 0.5, 1);
   }
@@ -140,6 +140,12 @@
     background: var(--gold);
     font-weight: 900;
     animation: glint 1.6s ease-in-out 0.5s infinite;
+  }
+
+  @media (max-width: 560px) {
+    .inner {
+      min-height: 3.2rem;
+    }
   }
 
   @keyframes glint {

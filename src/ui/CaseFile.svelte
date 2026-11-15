@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Case, Mood } from '../court/types';
+  import type { Gaze, Take } from './rig/parts';
   import Character from './rig/Character.svelte';
   import EvidenceTag from './EvidenceTag.svelte';
   import MoneyCounter from './MoneyCounter.svelte';
@@ -9,6 +10,8 @@
     file,
     number,
     mood,
+    gaze = null,
+    take = null,
     flipped,
     onflip,
   }: {
@@ -16,6 +19,9 @@
     number: number;
     /** The face right now; it changes as the player handles the cards. */
     mood: Mood;
+    /** Where they look: at the card being considered, or away from awkward evidence. */
+    gaze?: Gaze | null;
+    take?: Take | null;
     flipped: readonly boolean[];
     onflip: (index: number) => void;
   } = $props();
@@ -25,7 +31,7 @@
   <span class="tab" aria-hidden="true">Case file · No. {String(number).padStart(3, '0')}</span>
   <div class="sheet">
     <div class="mugshot">
-      <Character look={file.person.look} {mood} framing="bust" />
+      <Character look={file.person.look} {mood} {gaze} {take} framing="bust" />
     </div>
 
     <div class="who">
