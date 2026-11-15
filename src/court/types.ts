@@ -75,15 +75,50 @@ export interface Pictures {
   count: number;
 }
 
-export type Mood = 'smug' | 'nervous' | 'sad' | 'shocked';
+/** A face. Cases use these for the face a defendant arrives with; scenes use them all. */
+export const MOODS = ['neutral', 'smug', 'nervous', 'worried', 'shocked', 'sad', 'relieved', 'grumpy', 'happy'] as const;
+export type Mood = (typeof MOODS)[number];
 
-/** One character rig, dressed differently for each defendant. */
+export const OUTFITS = [
+  'suit',
+  'blazer',
+  'uniform',
+  'shirt',
+  'tee',
+  'blouse',
+  'apron',
+  'hoodie',
+  'boss',
+  'scrubs',
+  'gown',
+  'overalls',
+  'prison',
+  'singlet',
+  'vest',
+] as const;
+export type Outfit = (typeof OUTFITS)[number];
+
+export type Extra = 'glasses' | 'watch' | 'moustache' | 'beard' | 'stubble' | 'pearls' | 'cap' | 'earrings' | 'blush';
+
+/**
+ * How a character looks. One rig draws everyone, so faces, builds and hair
+ * set people apart, not only their clothes. Everything but skin, hair and
+ * outfit has a default.
+ */
 export interface Look {
   /** 0 = lightest … 4 = darkest. */
   skin: 0 | 1 | 2 | 3 | 4;
-  hair: 'bald' | 'short' | 'parted' | 'curly' | 'bun' | 'long';
-  outfit: 'suit' | 'uniform' | 'shirt' | 'apron' | 'hoodie' | 'dress' | 'boss';
-  extras?: ('glasses' | 'watch' | 'moustache' | 'pearls' | 'cap')[];
+  face?: 'round' | 'oval' | 'square' | 'wide';
+  build?: 'slim' | 'average' | 'broad' | 'round';
+  hair: 'bald' | 'short' | 'parted' | 'curly' | 'bun' | 'long' | 'bob' | 'spiky' | 'receding';
+  hairColor?: 'black' | 'brown' | 'grey' | 'white' | 'auburn';
+  brows?: 'thin' | 'thick' | 'bushy';
+  nose?: 'button' | 'round' | 'long';
+  age?: 'young' | 'adult' | 'old';
+  outfit: Outfit;
+  /** The outfit's main colour, for outfits that come in colours (shirt, tee, blouse, hoodie, vest, blazer). */
+  color?: string;
+  extras?: Extra[];
 }
 
 export interface Person {

@@ -5,7 +5,7 @@
   import { court } from './court.svelte';
   import CourtBar from './CourtBar.svelte';
   import CrowdStrip from './CrowdStrip.svelte';
-  import Defendant from './Defendant.svelte';
+  import Character from './rig/Character.svelte';
   import Newspaper from './Newspaper.svelte';
   import FallbackScene from './scenes/FallbackScene.svelte';
   import PrisonScene from './scenes/PrisonScene.svelte';
@@ -133,7 +133,7 @@
       {#if beat < SCENE}
         <div class="intro">
           <div class="mug">
-            <Defendant look={file.person.look} mood={beat >= STAMP ? 'shocked' : file.person.mood} />
+            <Character look={file.person.look} mood={beat >= STAMP ? 'shocked' : file.person.mood} framing="bust" />
             <p class="who">{file.person.name}</p>
           </div>
           <svg class="gavel" viewBox="0 0 100 100" aria-hidden="true">

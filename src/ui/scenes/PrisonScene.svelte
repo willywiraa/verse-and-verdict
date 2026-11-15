@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Case, Option } from '../../court/types';
-  import Defendant from '../Defendant.svelte';
+  import Character from '../rig/Character.svelte';
   import Puff from './Puff.svelte';
 
   /** Prison: a puff, an orange uniform, the bars come down, and the years are scratched on the wall. */
@@ -35,8 +35,8 @@
   </div>
 
   <div class="person">
-    <div class="before"><Defendant look={file.person.look} mood="shocked" /></div>
-    <div class="after"><Defendant look={file.person.look} mood="sad" outfit="prison" /></div>
+    <div class="before"><Character look={file.person.look} mood="shocked" framing="bust" /></div>
+    <div class="after"><Character look={file.person.look} mood="sad" outfit="prison" framing="bust" /></div>
     <Puff at={0.4} />
   </div>
 

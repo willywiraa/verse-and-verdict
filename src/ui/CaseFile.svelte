@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Case, Mood } from '../court/types';
-  import Defendant from './Defendant.svelte';
+  import Character from './rig/Character.svelte';
   import EvidenceTag from './EvidenceTag.svelte';
   import MoneyCounter from './MoneyCounter.svelte';
   import PictureRow from './PictureRow.svelte';
@@ -25,7 +25,7 @@
   <span class="tab" aria-hidden="true">Case file · No. {String(number).padStart(3, '0')}</span>
   <div class="sheet">
     <div class="mugshot">
-      <Defendant look={file.person.look} {mood} />
+      <Character look={file.person.look} {mood} framing="bust" />
     </div>
 
     <div class="who">

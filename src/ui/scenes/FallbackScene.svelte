@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Case, Option } from '../../court/types';
-  import Defendant from '../Defendant.svelte';
+  import Character from '../rig/Character.svelte';
   import ScenePreview from '../ScenePreview.svelte';
 
   /** A simple stand-in for scenes that are not drawn yet: the card's loop, large, beside the defendant. */
@@ -9,7 +9,7 @@
 
 <div class="scene">
   <div class="backdrop"></div>
-  <div class="person"><Defendant look={file.person.look} mood="sad" /></div>
+  <div class="person"><Character look={file.person.look} mood="sad" framing="bust" /></div>
   <div class="loop"><ScenePreview scene={option.scene} playing /></div>
 </div>
 

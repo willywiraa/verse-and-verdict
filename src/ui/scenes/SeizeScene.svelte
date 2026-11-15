@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Case, Option } from '../../court/types';
-  import Defendant from '../Defendant.svelte';
+  import Character from '../rig/Character.svelte';
   import { PICTURE_COLORS, PICTURE_ICONS } from '../pictures';
   import Puff from './Puff.svelte';
 
@@ -46,8 +46,8 @@
   {/if}
 
   <div class="person">
-    <div class="before"><Defendant look={file.person.look} mood="shocked" /></div>
-    <div class="after"><Defendant look={file.person.look} mood="sad" outfit="singlet" /></div>
+    <div class="before"><Character look={file.person.look} mood="shocked" framing="bust" /></div>
+    <div class="after"><Character look={file.person.look} mood="sad" outfit="singlet" framing="bust" /></div>
     <Puff at={1.05} />
   </div>
 </div>
