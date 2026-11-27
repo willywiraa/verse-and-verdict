@@ -1,4 +1,4 @@
-import type { Case, CourtContent, Option } from '../src/court/types';
+import type { Case, CourtContent, Option } from '../src/shared/court/types';
 
 /** One option per scene, with a crowd change and optional building. */
 export const OPTION: { [K in Option['scene']]: Extract<Option, { scene: K }> } = {

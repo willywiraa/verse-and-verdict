@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { COURT } from '../src/cases';
-import { validateCourt } from '../src/cases/validate';
-import type { Case, CourtContent } from '../src/court/types';
+import { CASES, CASE_IDS, courtFor } from '../src/shared/cases';
+import { validateCourt } from '../src/shared/cases/validate';
+import { DOCKET_SIZE, docketFor } from '../src/shared/daily';
+import type { Case, CourtContent } from '../src/shared/court/types';
 import { OPTION, makeCase, makeCourt } from './court-fixtures';
 
 function errorsFor(c: Case): string[] {
@@ -10,9 +11,24 @@ function errorsFor(c: Case): string[] {
 
 describe('the cases', () => {
   it('pass validation', () => {
-    const report = validateCourt(COURT);
+    const report = validateCourt(courtFor(docketFor(1, CASE_IDS)));
     for (const warning of report.warnings) console.warn(`warning: ${warning}`);
     expect(report.errors).toEqual([]);
+  });
+
+  it('give every day three different cases that exist', () => {
+    for (let day = 1; day <= 120; day++) {
+      const docket = docketFor(day, CASE_IDS);
+      expect(docket).toHaveLength(DOCKET_SIZE);
+      expect(new Set(docket).size).toBe(DOCKET_SIZE);
+      for (const id of docket) expect(CASE_IDS).toContain(id);
+    }
+  });
+
+  it('use every case before repeating one', () => {
+    const firstPass = new Set<string>();
+    for (let day = 2; firstPass.size < CASES.length && day < 40; day++) for (const id of docketFor(day, CASE_IDS)) firstPass.add(id);
+    expect(firstPass.size).toBe(CASES.length);
   });
 });
 
@@ -23,7 +39,6 @@ describe('the case validator', () => {
   });
 
   it('warns about a short day and rejects a broken one', () => {
-    expect(validateCourt(makeCourt(2)).warnings).toContain('The Court Day has 2 of 6 cases');
     const court: CourtContent = makeCourt(2);
     expect(validateCourt({ ...court, day: ['case-1', 'case-1', 'nobody'] }).errors).toEqual([
       'The Court Day lists a case twice',

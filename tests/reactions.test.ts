@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { gazeAtCard, reactionTo } from '../src/ui/reactions';
+import { gazeAtCard, reactionTo } from '../src/client/ui/reactions';
 
 describe('how a defendant reacts to a card', () => {
   it('sweats more the harsher the punishment', () => {

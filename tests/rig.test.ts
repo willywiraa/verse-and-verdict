@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { MOODS, OUTFITS } from '../src/court/types';
-import { CAST } from '../src/ui/rig/cast';
-import { EXPRESSIONS, POSES, TAKES, fidgetFor, outfitStyle } from '../src/ui/rig/parts';
+import { MOODS, OUTFITS } from '../src/shared/court/types';
+import { CAST } from '../src/client/ui/rig/cast';
+import { EXPRESSIONS, POSES, TAKES, fidgetFor, outfitStyle } from '../src/client/ui/rig/parts';
 
 describe('the character rig', () => {
   it('has a face for every mood', () => {

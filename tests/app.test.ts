@@ -1,18 +1,28 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { SCENE_LENGTH } from '../src/ui/scenes/index';
+import { SCENE_LENGTH } from '../src/client/ui/scenes/index';
 
 type Svelte = typeof import('svelte');
 let svelte: Svelte | null = null;
 let app: ReturnType<Svelte['mount']> | null = null;
 
-/** Mount the app with a fresh module graph, so the store reads storage again, like a page reload. */
-async function start(): Promise<void> {
+/** Wait for the stand-in server's promises to settle. */
+async function settle(): Promise<void> {
+  for (let i = 0; i < 4; i++) {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    svelte?.flushSync();
+  }
+}
+
+/** Mount a page with a fresh module graph, like a page reload, on docket #1. */
+async function start(page: 'App' | 'Splash' = 'App'): Promise<void> {
+  window.history.replaceState(null, '', '/?day=1');
   vi.resetModules();
   svelte = await import('svelte');
-  const { default: App } = await import('../src/App.svelte');
-  app = svelte.mount(App, { target: document.body });
-  svelte.flushSync();
+  const { default: Component } =
+    page === 'App' ? await import('../src/client/App.svelte') : await import('../src/client/ui/Splash.svelte');
+  app = svelte.mount(Component, { target: document.body });
+  await settle();
 }
 
 function stop(): void {
@@ -52,117 +62,127 @@ function press(key: string): void {
 const tags = () => [...document.querySelectorAll<HTMLButtonElement>('button.tag')];
 const cards = () => [...document.querySelectorAll<HTMLButtonElement>('button.card')];
 
+/** Pick card `key`, sentence it, skip the scene and move on. */
+async function judge(key: string): Promise<void> {
+  press(key);
+  press('Enter');
+  press('Enter');
+  await settle();
+  press('Enter');
+  await settle();
+}
+
 beforeEach(() => localStorage.clear());
 afterEach(stop);
 
+describe('the feed card', () => {
+  it("shows today's three defendants and opens court", async () => {
+    await start('Splash');
+    expect(text()).toContain('Docket #1');
+    expect(text()).toContain('Bu Ani');
+    expect(text()).toContain('Pak Harjo');
+    expect(text()).toContain('Dodi');
+    expect(button('Open court').disabled).toBe(false);
+  });
+});
+
 describe('playing in the browser', () => {
+  it('opens straight on the first case of the docket', async () => {
+    await start();
+    expect(text()).toContain('Bu Ani');
+    expect(text()).toContain('Stole bread from a bakery');
+    expect(text()).toContain('Rp50,000');
+    expect(text()).toContain('5 loaves');
+    expect(text()).toContain('Case 1/3');
+    expect(cards()).toHaveLength(4);
+  });
+
+  it('flips evidence by tap or by number key', async () => {
+    await start();
+    expect(tags()[0].getAttribute('aria-label')).toBe('Evidence 1: tap to look');
+    click(tags()[0]);
+    expect(tags()[0].getAttribute('aria-label')).toBe('Evidence 1: Three hungry children at home.');
+    press('3');
+    expect(tags()[2].getAttribute('aria-label')).toBe('Evidence 3: The baker knows her well.');
+  });
+
+  it('picks a card, sentences it, then shows how Reddit ruled', async () => {
+    await start();
+    expect(button('Pick a card').disabled).toBe(true);
+    press('w');
+    expect(cards()[1].getAttribute('aria-pressed')).toBe('true');
+    press('Enter');
+    expect(text()).toContain('Tap to skip');
+    press('Enter');
+    await settle();
+    expect(text()).toContain('Bread thief pays the baker back');
+    expect(text()).toContain('How Reddit ruled');
+    expect(text()).toMatch(/You sided with \d+% of Reddit|Only \d+% of Reddit agreed/);
+    press('Enter');
+    expect(text()).toContain('Pak Harjo');
+    expect(text()).toContain('Case 2/3');
+  });
+
   it('plays a verdict in beats: gavel, stamp, scene, crowd, headline', async () => {
+    await start();
     vi.useFakeTimers();
     try {
-      await start();
-      click(button('Start court'));
       press('q');
       press('Enter');
       expect(text()).not.toContain('Sentenced');
       vi.advanceTimersByTime(700);
       flushSync();
       expect(text()).toContain('Sentenced');
-      expect(text()).toContain('Prison · 20 years');
+      expect(text()).toContain('Prison · 1 year');
       vi.advanceTimersByTime(1000);
       flushSync();
-      expect(text()).toContain('20 years');
-      expect(text()).not.toContain('Yes!');
+      expect(text()).not.toContain('Too harsh!');
       // The scene mounted at the last flush; the crowd reacts when it has played out.
       vi.advanceTimersByTime(SCENE_LENGTH.prison * 1000 + 50);
       flushSync();
-      expect(text()).toContain('Yes!');
-      expect(text()).toContain('Money still missing');
+      expect(text()).toContain('Too harsh!');
+      expect(text()).toContain('Her kids wait alone');
       vi.advanceTimersByTime(1400);
       flushSync();
-      expect(text()).toContain('Harjo gets 20 years. Money still gone.');
-      expect(button('End the day')).toBeTruthy();
+      expect(text()).toContain('Mother jailed for five loaves');
+      expect(button('Next case')).toBeTruthy();
     } finally {
       vi.useRealTimers();
     }
   });
 
-  it('opens on the title, then the first case file', async () => {
-    await start();
-    expect(text()).toContain('Fit the Crime');
-    expect(text()).toContain('Nothing graphic');
-    click(button('Start court'));
-    expect(text()).toContain('Pak Harjo');
-    expect(text()).toContain('Stole hospital money');
-    expect(text()).toContain('Rp500 billion');
-    expect(text()).toContain('5 hospitals');
-    expect(cards()).toHaveLength(4);
-  });
-
-  it('flips evidence by tap or by number key', async () => {
-    await start();
-    click(button('Start court'));
-    expect(tags()[0].getAttribute('aria-label')).toBe('Evidence 1: tap to look');
-    click(tags()[0]);
-    expect(tags()[0].getAttribute('aria-label')).toBe('Evidence 1: Cash found in his car.');
-    press('3');
-    expect(tags()[2].getAttribute('aria-label')).toBe('Evidence 3: Half the money is hidden abroad.');
-    expect(tags()[1].getAttribute('aria-label')).toBe('Evidence 2: tap to look');
-  });
-
-  it('picks a card, sentences it and shows what happened', async () => {
-    await start();
-    click(button('Start court'));
-    const sentence = button('Pick a card');
-    expect(sentence.disabled).toBe(true);
-    press('Enter');
-    expect(text()).toContain('Pak Harjo');
-
-    click(cards()[0]);
-    expect(cards()[0].getAttribute('aria-pressed')).toBe('true');
-    press('w');
-    expect(cards()[0].getAttribute('aria-pressed')).toBe('false');
-    expect(cards()[1].getAttribute('aria-pressed')).toBe('true');
-    expect(button('Sentence').disabled).toBe(false);
-
-    press('Enter');
-    expect(text()).toContain('Tap to skip');
-    expect(text()).not.toContain('His mansion builds 5 hospitals');
-    press('Enter');
-    expect(text()).toContain('His mansion builds 5 hospitals');
-    expect(text()).toContain('Left in his socks');
-    expect(text()).toContain('Fair enough.');
-    expect(text()).toContain('Crowd +1');
-    press('Enter');
-    expect(text()).toContain('Court is over');
-  });
-
   it('sentences with Enter on a card that is already chosen', async () => {
     await start();
-    click(button('Start court'));
-    const card = cards()[2];
-    // A keyboard press arrives as a click with no mouse detail.
-    card.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 0 }));
+    cards()[2].dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 0 }));
     flushSync();
     expect(cards()[2].getAttribute('aria-pressed')).toBe('true');
-    expect(text()).toContain('Pak Harjo');
     cards()[2].dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 0 }));
     flushSync();
     expect(text()).toContain('Tap to skip');
   });
 
-  it('resumes where the player left off', async () => {
+  it('resumes on the next case after a reload', async () => {
     await start();
-    click(button('Start court'));
-    click(cards()[3]);
-    click(button('Sentence'));
-    click(document.querySelector('main'));
-    expect(text()).toContain('Harjo banned from office for life');
+    await judge('e');
+    expect(text()).toContain('Pak Harjo');
     stop();
-
     await start();
-    click(button('Continue'));
-    // A verdict loaded from a save shows its outcome without replaying.
-    expect(text()).toContain('Harjo banned from office for life');
-    expect(text()).not.toContain('Tap to skip');
+    expect(text()).toContain('Pak Harjo');
+    expect(text()).toContain('Case 2/3');
+  });
+
+  it('plays a whole docket by keyboard and ends on the result card', async () => {
+    await start();
+    await judge('r');
+    await judge('w');
+    await judge('q');
+    await settle();
+    expect(text()).toContain('Court is adjourned');
+    expect(text()).toMatch(/Judge/);
+    expect(text()).toMatch(/You agreed with Reddit on \d of 3/);
+    // Mercy for the bread thief (Rp50,000), wealth taken from the hospital thief (Rp500 billion).
+    expect(text()).toContain('You were tougher on the hospital thief.');
+    expect(button('Share in comments')).toBeTruthy();
+    expect(text()).toContain('Next docket in');
   });
 });

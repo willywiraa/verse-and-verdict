@@ -9,10 +9,10 @@ import {
   next,
   sentence,
   type DayState,
-} from '../src/court/court';
-import { formatRp } from '../src/court/money';
-import { crowdMood, dayReport, fairness, fairnessLine, judgeTitle } from '../src/court/report';
-import type { CourtContent } from '../src/court/types';
+} from '../src/shared/court/court';
+import { formatRp } from '../src/shared/court/money';
+import { crowdMood, dayReport, fairness, fairnessLine, judgeTitle } from '../src/shared/court/report';
+import type { CourtContent } from '../src/shared/court/types';
 import { OPTION, makeCase, makeCourt } from './court-fixtures';
 
 /** Sentence every case in turn with the given option indexes. */

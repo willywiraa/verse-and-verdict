@@ -1,0 +1,33 @@
+{
+  "$schema": "https://developers.reddit.com/schema/config-file.v1.json",
+  "name": "fit-the-crime",
+  "post": {
+    "dir": "dist/client",
+    "entrypoints": {
+      "default": { "entry": "splash.html", "height": "tall" },
+      "game": { "entry": "game.html" }
+    }
+  },
+  "server": { "dir": "dist/server", "entry": "index.cjs" },
+  "permissions": {
+    "redis": true,
+    "reddit": { "enable": true, "scope": "user" }
+  },
+  "menu": {
+    "items": [
+      {
+        "label": "Fit the Crime: post today's docket",
+        "description": "Create the daily courtroom post",
+        "location": "subreddit",
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/post-today"
+      }
+    ]
+  },
+  "triggers": { "onAppInstall": "/internal/triggers/on-app-install" },
+  "scheduler": {
+    "tasks": {
+      "daily-docket": { "endpoint": "/internal/scheduler/daily-docket", "cron": "0 0 * * *" }
+    }
+  }
+}

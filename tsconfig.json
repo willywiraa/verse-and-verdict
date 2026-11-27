@@ -2,7 +2,11 @@
   "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
@@ -16,7 +20,27 @@
     "skipLibCheck": true,
     "allowJs": true,
     "checkJs": true,
-    "types": ["svelte", "vite/client"]
+    "types": [
+      "svelte",
+      "vite/client",
+      "node"
+    ],
+    "paths": {
+      "@shared/*": [
+        "./src/shared/*"
+      ]
+    },
+    "customConditions": [
+      "browser"
+    ]
   },
-  "include": ["src/**/*.ts", "src/**/*.svelte", "tests/**/*.ts", "vite.config.ts"]
+  "include": [
+    "src/client/**/*.ts",
+    "src/client/**/*.svelte",
+    "src/shared/**/*.ts",
+    "tests/**/*.ts",
+    "vite.config.ts",
+    "vite.local.config.ts",
+    "vitest.config.ts"
+  ]
 }

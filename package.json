@@ -2,19 +2,22 @@
   "name": "fit-the-crime",
   "private": true,
   "version": "0.1.0",
-  "description": "A small browser game: pick the punishment, watch what happens.",
+  "description": "A daily courtroom game for Reddit: judge three cases a day, pick the punishment, watch what happens, and see how Reddit ruled.",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "devvit playtest",
+    "dev:local": "vite --config vite.local.config.ts",
     "build": "npm run validate && vite build",
-    "validate": "node scripts/vitest.mjs run tests/content.test.ts tests/cases.test.ts --reporter=verbose",
-    "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json",
-    "test": "node scripts/vitest.mjs run"
+    "validate": "node scripts/vitest.mjs run tests/cases.test.ts --reporter=verbose",
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.server.json",
+    "test": "node scripts/vitest.mjs run",
+    "login": "devvit login",
+    "deploy": "npm run check && npm test && npm run build && devvit upload"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@tsconfig/svelte": "^5.0.9",
+    "@types/node": "^22.20.7",
     "happy-dom": "^21.0.4",
     "svelte": "^5.57.3",
     "svelte-check": "^4.7.8",
@@ -23,7 +26,12 @@
     "vitest": "^5.1.0"
   },
   "dependencies": {
+    "@devvit/start": "0.15.4",
+    "@devvit/web": "0.15.4",
     "@fontsource/cormorant-garamond": "^5.3.0",
-    "@lucide/svelte": "^1.72.0"
+    "@hono/node-server": "2.1.6",
+    "@lucide/svelte": "^1.72.0",
+    "devvit": "0.15.4",
+    "hono": "4.13.17"
   }
 }

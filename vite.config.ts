@@ -1,18 +1,15 @@
-import { defineConfig } from 'vitest/config';
+import { fileURLToPath } from 'node:url';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { devvit } from '@devvit/start/vite';
+import { defineConfig } from 'vite';
 
-export default defineConfig(({ mode }) => ({
-  // Relative asset paths, so the build works from any folder:
-  // GitHub Pages project sites, itch.io uploads, or a local file server.
-  base: './',
-  plugins: [svelte()],
-  // Interface tests mount components, which needs Svelte's browser build.
-  resolve: mode === 'test' ? { conditions: ['browser'] } : undefined,
-  build: {
-    target: 'es2022',
-  },
-  test: {
-    include: ['tests/**/*.test.ts'],
-    server: { deps: { inline: ['svelte'] } },
-  },
+/**
+ * The Reddit build: Devvit's plugin builds the web view (src/client, one page
+ * per devvit.json entrypoint) into dist/client and the server (src/server)
+ * into dist/server/index.cjs. The plugin only runs for builds (`devvit
+ * playtest` runs `vite build --watch`); tools that merely read this file skip it.
+ */
+export default defineConfig(({ command }) => ({
+  plugins: [svelte(), ...(command === 'build' ? [devvit()] : [])],
+  resolve: { alias: { '@shared': fileURLToPath(new URL('./src/shared', import.meta.url)) } },
 }));
