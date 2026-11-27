@@ -1,3 +1,5 @@
+> **Outdated.** This document describes the earlier prototype, *Verse & Verdict*, a game about judging souls. The current game, *Fit the Crime*, is described in the [README](../README.md).
+
 # Verse & Verdict: Product Requirements
 
 Version 0.2 · 14 November 2026 · Design details: [GDD.md](GDD.md)

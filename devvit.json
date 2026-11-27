@@ -4,14 +4,25 @@
   "post": {
     "dir": "dist/client",
     "entrypoints": {
-      "default": { "entry": "splash.html", "height": "tall" },
-      "game": { "entry": "game.html" }
+      "default": {
+        "entry": "splash.html",
+        "height": "tall"
+      },
+      "game": {
+        "entry": "game.html"
+      }
     }
   },
-  "server": { "dir": "dist/server", "entry": "index.cjs" },
+  "server": {
+    "dir": "dist/server",
+    "entry": "index.cjs"
+  },
   "permissions": {
     "redis": true,
-    "reddit": { "enable": true, "scope": "user" }
+    "reddit": {
+      "enable": true,
+      "scope": "user"
+    }
   },
   "menu": {
     "items": [
@@ -24,10 +35,18 @@
       }
     ]
   },
-  "triggers": { "onAppInstall": "/internal/triggers/on-app-install" },
+  "triggers": {
+    "onAppInstall": "/internal/triggers/on-app-install"
+  },
   "scheduler": {
     "tasks": {
-      "daily-docket": { "endpoint": "/internal/scheduler/daily-docket", "cron": "0 0 * * *" }
+      "daily-docket": {
+        "endpoint": "/internal/scheduler/daily-docket",
+        "cron": "0 0 * * *"
+      }
     }
+  },
+  "marketingAssets": {
+    "icon": "assets/icon.png"
   }
 }
