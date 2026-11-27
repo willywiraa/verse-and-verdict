@@ -216,6 +216,25 @@
     animation: badge 0.35s cubic-bezier(0.3, 1.8, 0.5, 1);
   }
 
+  @media (max-width: 640px) {
+    .card {
+      padding: 0.4rem 0.4rem 0.5rem;
+    }
+
+    .art {
+      max-width: 4.8rem;
+    }
+
+    .label {
+      margin-top: 0.2rem;
+      font-size: 0.86rem;
+    }
+
+    .detail {
+      font-size: 0.72rem;
+    }
+  }
+
   @keyframes sheen {
     from {
       background-position: 130% 0;

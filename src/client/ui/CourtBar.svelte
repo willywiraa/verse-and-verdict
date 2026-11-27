@@ -44,4 +44,12 @@
   .end {
     margin-left: auto;
   }
+
+  @media (max-width: 560px) {
+    .bar {
+      gap: 0.4rem 0.8rem;
+      padding: 0.35rem 0.6rem;
+      font-size: 0.9rem;
+    }
+  }
 </style>

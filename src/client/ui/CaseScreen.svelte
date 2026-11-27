@@ -186,11 +186,62 @@
     }
   }
 
-  @media (max-width: 640px) {
+  /* Wide screens (Reddit's expanded view on desktop): the case on the left, the cards on the right, all in view. */
+  @media (min-width: 860px) {
+    .screen {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      grid-template-areas:
+        'bar bar'
+        'file choose';
+      align-items: start;
+      gap: 0.9rem 1.2rem;
+      max-width: 68rem;
+    }
+
+    .screen > :global(:first-child) {
+      grid-area: bar;
+    }
+
+    .screen > :global(.file) {
+      grid-area: file;
+    }
+
+    .choose {
+      grid-area: choose;
+      padding-top: 0.2rem;
+    }
+
     .cards,
     .cards.four {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.75rem;
+      gap: 0.8rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .screen {
+      gap: 0.5rem;
+      padding: 0.5rem 0.6rem 0.8rem;
+    }
+
+    .choose .eyebrow {
+      display: none;
+    }
+
+    .choose {
+      gap: 0.5rem;
+    }
+
+    .cards,
+    .cards.four {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.55rem;
+    }
+
+    .sentence {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
     }
   }
 </style>

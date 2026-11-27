@@ -22,7 +22,14 @@ async function start(page: 'App' | 'Splash' = 'App'): Promise<void> {
   const { default: Component } =
     page === 'App' ? await import('../src/client/App.svelte') : await import('../src/client/ui/Splash.svelte');
   app = svelte.mount(Component, { target: document.body });
-  await settle();
+  // Wait until the stand-in server has answered and the page shows the docket.
+  await vi.waitFor(
+    () => {
+      svelte?.flushSync();
+      if (!/Docket #|Case \d\/|Court is adjourned/.test(text())) throw new Error('still loading');
+    },
+    { timeout: 4000, interval: 10 },
+  );
 }
 
 function stop(): void {

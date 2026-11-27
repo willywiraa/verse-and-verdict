@@ -95,11 +95,11 @@
 
   .sheet {
     display: grid;
-    grid-template-columns: minmax(8rem, 11rem) 1fr;
+    grid-template-columns: minmax(7rem, 9.5rem) 1fr;
     grid-template-areas:
       'mug who'
       'mug facts'
-      'mug evidence';
+      'evidence evidence';
     gap: 0.5rem 1.25rem;
     padding: 1rem 1.1rem 1.1rem;
     border: var(--line);
@@ -256,8 +256,40 @@
   }
 
   @media (max-width: 560px) {
+    .file {
+      padding-top: 1.2rem;
+    }
+
+    .tab {
+      font-size: 0.62rem;
+    }
+
+    .crime span {
+      font-size: 0.82rem;
+    }
+
+    .facts {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.3rem 0.6rem;
+    }
+
+    .money {
+      font-size: 1.25rem;
+    }
+
+    .worth {
+      font-size: 0.82rem;
+    }
+
+    .hurt li {
+      font-size: 0.78rem;
+    }
+
     .sheet {
-      grid-template-columns: 6.5rem 1fr;
+      gap: 0.3rem 0.8rem;
+      grid-template-columns: 4.8rem 1fr;
       grid-template-areas:
         'mug who'
         'facts facts'
@@ -270,8 +302,8 @@
     }
 
     .tags {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.4rem;
     }
   }
 </style>

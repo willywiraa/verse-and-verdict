@@ -47,6 +47,7 @@
     { at: 1.95, who: 'harjo', set: { facing: 'left', gait: 'walk', gaze: null } },
     { at: 3.0, who: 'harjo', set: { gait: 'stand' } },
     { at: 3.3, who: 'boss', set: { gait: 'stand', facing: 'front' } },
+    { at: 3.3, cue: 'stamp' },
     { at: 3.4, cue: 'twinkle' },
     { at: 3.5, who: 'boss', set: { pose: 'wave' }, take: 'nod', cue: 'pop' },
   ];
@@ -99,7 +100,9 @@
   </svg>
 
   <div class="actor harjo tl"><Character look={file.person.look} {...cast.harjo} /></div>
-  <div class="actor boss tl"><Character look={CAST.newBoss} {...cast.boss} /></div>
+  {#if option.replaced}
+    <div class="actor boss tl"><Character look={CAST.newBoss} {...cast.boss} /></div>
+  {/if}
 
   <!-- The desk, with what sits on it. -->
   <svg class="plant tl" viewBox="0 0 30 34" aria-hidden="true">
@@ -136,7 +139,13 @@
     </g>
   </svg>
 
-  <div class="plate fresh tl"><span class="sign">{option.sign}</span></div>
+  {#if option.replaced}
+    <div class="plate fresh tl"><span class="sign">{option.sign}</span></div>
+  {:else}
+    <!-- Nobody takes over: the lights go down and the place is shut. -->
+    <div class="dim tl"></div>
+    <div class="closed tl">Closed</div>
+  {/if}
 
   <svg class="bin tl" viewBox="0 0 40 50" aria-hidden="true">
     <path d="M4 6 H36 L32 48 H8 Z" fill="#8f9aa8" stroke="var(--ink)" stroke-width="2.6" stroke-linejoin="round" />
@@ -145,7 +154,11 @@
 
   <Particles kind="dust" x={37} y={62} at={0.86} count={6} spread={3} />
   <Particles kind="dust" x={17} y={86} at={1.36} count={8} spread={4} />
-  <Particles kind="sparkle" x={36} y={61} at={3.42} count={8} spread={5} />
+  {#if option.replaced}
+    <Particles kind="sparkle" x={36} y={61} at={3.42} count={8} spread={5} />
+  {:else}
+    <Particles kind="dust" x={50} y={50} at={3.3} count={12} spread={9} />
+  {/if}
   {#if option.builds}
     <Particles kind="sparkle" x={77} y={32} at={3.6} count={7} spread={4} />
   {/if}
@@ -319,6 +332,43 @@
     transform-origin: 0% 100%;
     transform: translate(-11cqw, 29cqh) rotate(-100deg) scale(0.7);
     animation: drop 3.9s linear both;
+  }
+
+  .dim {
+    position: absolute;
+    inset: 0;
+    background: rgb(31 42 68 / 0.38);
+    animation: dim 0.5s ease-in 2.9s both;
+  }
+
+  .closed {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    padding: 0.1em 0.5em;
+    border: 0.8cqw solid var(--red);
+    border-radius: 1cqw;
+    background: rgb(255 255 255 / 0.85);
+    color: var(--red-deep);
+    font-size: max(1.4rem, 7cqw);
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transform: translate(-50%, -50%) rotate(-10deg);
+    animation: closed 0.35s cubic-bezier(0.3, 1.6, 0.5, 1) 3.25s both;
+  }
+
+  @keyframes dim {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes closed {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) rotate(-10deg) scale(2.6);
+    }
   }
 
   .plate.fresh {

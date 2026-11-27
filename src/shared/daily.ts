@@ -50,11 +50,13 @@ export function shortDate(iso: string): string {
  */
 export function docketFor(n: number, ids: readonly string[]): string[] {
   if (ids.length < DOCKET_SIZE) throw new Error(`The pool needs at least ${DOCKET_SIZE} cases`);
-  const pinned = PINNED[n];
-  if (pinned && pinned.every((id) => ids.includes(id))) return [...pinned];
-
   const sorted = [...ids].sort();
-  const pass = (p: number) => shuffle(sorted, 7919 * (p + 1));
+  // The first pass opens with docket #1's hand-picked cases, so the next days carry on without repeats.
+  const first = PINNED[1]?.every((id) => ids.includes(id)) ? PINNED[1] : [];
+  const pass = (p: number) => {
+    const order = shuffle(sorted, 7919 * (p + 1));
+    return p === 0 ? [...first, ...order.filter((id) => !first.includes(id))] : order;
+  };
   let position = (n - 1) * DOCKET_SIZE;
   const docket: string[] = [];
   while (docket.length < DOCKET_SIZE) {

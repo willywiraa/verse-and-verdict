@@ -1,5 +1,7 @@
 <script lang="ts">
+  import Fish from '@lucide/svelte/icons/fish';
   import type { Case, Option } from '@shared/court/types';
+  import { untrack } from 'svelte';
   import Character from '../rig/Character.svelte';
   import { CAST } from '../rig/cast';
   import Bubble from './kit/Bubble.svelte';
@@ -9,10 +11,11 @@
   import { actor, playBeats, type Beat } from './kit/timeline.svelte';
 
   /**
-   * Community service, in a hospital ward (3.9 s): a puff and he's in overalls
-   * with a mop. He mops across the muddy floor, which shines behind him. The
-   * patient points at a spot he missed; he goes back for it, then leans on the
-   * mop, worn out, while the floor gleams.
+   * Community service (3.9 s): a puff and they're in overalls with a mop. They
+   * mop across the dirty floor, which shines behind them. Someone points at a
+   * spot they missed; they go back for it, then lean on the mop, worn out.
+   * The place follows the case: a hospital ward (with a patient and a nurse),
+   * a street of shops, or a riverbank, where the purple water turns blue.
    */
   let {
     file,
@@ -29,13 +32,20 @@
 
   let clock = $state<HTMLElement | null>(null);
 
-  // The ward, with its patient and nurse, is for hospitals; other places get a plain floor for now.
-  const ward = $derived(option.place === 'hospital');
+  const where = untrack(() => (option.place === 'hospital' ? 'ward' : option.place === 'river' ? 'river' : 'street'));
+  const ward = where === 'ward';
+  /** Who points out the missed spot, and who watches from the side. */
+  const pointer = where === 'ward' ? CAST.patient : where === 'river' ? CAST.fisher : CAST.shopkeeper;
+  const watcher = where === 'ward' ? CAST.nurse : where === 'river' ? CAST.mother : CAST.child;
 
   const cast = $state({
     harjo: actor({ mood: 'shocked' }),
     patient: actor({ mood: 'neutral', facing: 'left' }),
-    nurse: actor({ mood: 'neutral', pose: 'clipboard', holding: 'clipboard', gaze: { x: 1, y: 0.2 } }),
+    nurse: actor(
+      ward
+        ? { mood: 'neutral', pose: 'clipboard', holding: 'clipboard', gaze: { x: 1, y: 0.2 } }
+        : { mood: 'neutral', gaze: { x: 1, y: 0.2 } },
+    ),
   });
 
   const beats: Beat<keyof typeof cast>[] = [
@@ -68,8 +78,9 @@
   ];
 </script>
 
-<div class="scene service">
+<div class="scene service {where}">
   <i class="scene-clock" bind:this={clock}></i>
+  {#if ward}
   <div class="wall"></div>
   <div class="dado"></div>
 
@@ -89,6 +100,26 @@
     <path d="M15 15 V6" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" />
     <path d="M15 15 L20 18" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" />
   </svg>
+  {:else}
+    <div class="sky"></div>
+    {#if where === 'river'}
+      <div class="far-bank" aria-hidden="true">
+        {#each [6, 18, 31, 70, 84, 94] as x (x)}<span class="tree" style:left="{x}cqw"></span>{/each}
+      </div>
+      <div class="water"><div class="blue tl"></div></div>
+      <div class="jumps" aria-hidden="true">
+        {#each [[64, 3.35], [76, 3.5]] as [x, d] (x)}
+          <span class="jump tl" style:left="{x}cqw" style:--d="{d}s"><Fish size="100%" strokeWidth={2.2} /></span>
+        {/each}
+      </div>
+    {:else}
+      <div class="shops" aria-hidden="true">
+        {#each [['#e3b341', 2], ['#6cc3c9', 22], ['#d2433a', 42], ['#3e9b5f', 62], ['#f08a24', 82]] as [color, x] (x)}
+          <span class="shop" style:left="{x}cqw" style:--awning={color}><span class="awning"></span><span class="pane"></span></span>
+        {/each}
+      </div>
+    {/if}
+  {/if}
 
   {#if ward}
     <svg class="iv" viewBox="0 0 20 100" aria-hidden="true">
@@ -116,6 +147,9 @@
       />
     </svg>
     <div class="actor nurse"><Character look={CAST.nurse} {...cast.nurse} /></div>
+  {:else}
+    <div class="actor standing-pointer"><Character look={pointer} {...cast.patient} /></div>
+    <div class="actor standing-watcher" class:small={watcher === CAST.child}><Character look={watcher} {...cast.nurse} /></div>
   {/if}
 
   <div class="floor">
@@ -140,12 +174,171 @@
   <Particles kind="drop" x={48} y={30} at={3.2} count={4} spread={3} />
   <Particles kind="sparkle" x={38} y={86} at={3.4} count={7} spread={6} />
   <Particles kind="sparkle" x={54} y={88} at={3.5} count={7} spread={6} />
-  {#if ward}
-    <Bubble text="Missed a spot!" x={74} y={28} at={2.55} until={3.25} tail="right" />
-  {/if}
+  <Bubble text="Missed a spot!" x={ward ? 74 : 78} y={ward ? 28 : 24} at={2.55} until={3.25} tail="right" />
 </div>
 
 <style>
+  .sky {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #a8dde3, #e2f2ef);
+  }
+
+  .shops {
+    position: absolute;
+    inset: 0;
+  }
+
+  .shop {
+    position: absolute;
+    bottom: 16cqh;
+    width: 17cqw;
+    height: 36cqh;
+    border: 0.3cqw solid var(--ink);
+    background: #fffdf7;
+  }
+
+  .awning {
+    position: absolute;
+    left: -1cqw;
+    right: -1cqw;
+    top: 0;
+    height: 7cqh;
+    border: 0.3cqw solid var(--ink);
+    background: repeating-linear-gradient(90deg, var(--awning) 0 2.4cqw, #fffdf7 2.4cqw 4.8cqw);
+  }
+
+  .pane {
+    position: absolute;
+    left: 15%;
+    right: 15%;
+    top: 34%;
+    height: 34%;
+    border: 0.3cqw solid var(--ink);
+    background: #bfe6ea;
+  }
+
+  .far-bank {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 34cqh;
+    height: 14cqh;
+    border-top: 0.3cqw solid var(--ink);
+    background: #8fbf73;
+  }
+
+  .tree {
+    position: absolute;
+    bottom: 60%;
+    width: 7cqw;
+    aspect-ratio: 1;
+    border: 0.3cqw solid var(--ink);
+    border-radius: 50%;
+    background: #3e9b5f;
+  }
+
+  /* The river: purple with dye, turning blue behind the mop. */
+  .water {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 48cqh;
+    bottom: 16cqh;
+    border-top: 0.3cqw solid var(--ink);
+    background: repeating-linear-gradient(0deg, transparent 0 3cqh, rgb(255 255 255 / 0.12) 3cqh 3.6cqh), #8e5aa8;
+  }
+
+  .blue {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent 0 3cqh, rgb(255 255 255 / 0.25) 3cqh 3.6cqh), #3b8fd6;
+    clip-path: inset(0 0 0 0);
+    animation: river 3.9s linear both;
+  }
+
+  @keyframes river {
+    0%,
+    17.9% {
+      clip-path: inset(0 100% 0 0);
+    }
+    64.1%,
+    82% {
+      clip-path: inset(0 39% 0 0);
+    }
+    100% {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  .jumps {
+    position: absolute;
+    inset: 0;
+  }
+
+  .jump {
+    position: absolute;
+    top: 58cqh;
+    width: 5cqw;
+    aspect-ratio: 1;
+    color: #f08a24;
+    opacity: 0;
+    animation: jump 0.5s ease-in-out var(--d) both;
+  }
+
+  @keyframes jump {
+    0% {
+      opacity: 0;
+      transform: translateY(0) rotate(-30deg);
+    }
+    8% {
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(-14cqh) rotate(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(0) rotate(30deg);
+    }
+  }
+
+  .standing-pointer {
+    bottom: 6cqh;
+    height: 52cqh;
+    transform: translateX(calc(82cqw - 50%));
+  }
+
+  .standing-watcher {
+    bottom: 6cqh;
+    height: 50cqh;
+    transform: translateX(calc(12cqw - 50%));
+  }
+
+  .standing-watcher.small {
+    height: 38cqh;
+  }
+
+  .street .floor {
+    background: linear-gradient(180deg, #b9bfca, #a8afbb);
+  }
+
+  .street .clean {
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.5), transparent 45%),
+      #dfe3ea;
+  }
+
+  .river .floor {
+    background: linear-gradient(180deg, #9c8257, #8a7048);
+  }
+
+  .river .clean {
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.3), transparent 45%),
+      #a9cf8a;
+  }
+
   .wall {
     position: absolute;
     inset: 0;

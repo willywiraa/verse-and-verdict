@@ -9,9 +9,10 @@
   import Character from './rig/Character.svelte';
   import type { Take } from './rig/parts';
   import BanScene from './scenes/BanScene.svelte';
-  import FallbackScene from './scenes/FallbackScene.svelte';
+  import ChanceScene from './scenes/ChanceScene.svelte';
   import { SCENE_LENGTH } from './scenes';
   import PrisonScene from './scenes/PrisonScene.svelte';
+  import RepayScene from './scenes/RepayScene.svelte';
   import SeizeScene from './scenes/SeizeScene.svelte';
   import ServiceScene from './scenes/ServiceScene.svelte';
   import { crowdShout } from './words';
@@ -78,9 +79,8 @@
       court.cue('stamp');
     });
     at(scene, () => (beat = SCENE));
-    // Drawn scenes say when they are done, and this is only a safety net; the stand-in has no clock.
-    const drawn = ['prison', 'seize', 'service', 'ban'].includes(verdict.option.scene);
-    at(scene + SCENE_LENGTH[verdict.option.scene] + (drawn ? 1.5 : 0), sceneEnded);
+    // Scenes say when they are done; this is only a safety net.
+    at(scene + SCENE_LENGTH[verdict.option.scene] + 1.5, sceneEnded);
     return () => {
       for (const id of timers) clearTimeout(id);
     };
@@ -161,8 +161,10 @@
           <ServiceScene {file} {option} skip={skipped} onend={sceneEnded} />
         {:else if option.scene === 'ban'}
           <BanScene {file} {option} skip={skipped} onend={sceneEnded} />
+        {:else if option.scene === 'repay'}
+          <RepayScene {file} {option} skip={skipped} onend={sceneEnded} />
         {:else}
-          <FallbackScene {file} {option} skip={skipped} />
+          <ChanceScene {file} {option} skip={skipped} onend={sceneEnded} />
         {/if}
         {#if beat >= REACTION && option.note}
           <p class="note">{option.note}</p>

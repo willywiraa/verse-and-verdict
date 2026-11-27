@@ -9,7 +9,8 @@
   import { SCENE_LENGTH } from './index';
   import { actor, playBeats, type Beat } from './kit/timeline.svelte';
   import Car from './props/Car.svelte';
-  import Hospital from './props/Hospital.svelte';
+  import { PICTURE_COLORS, PICTURE_ICONS } from '../pictures';
+  import Building from './props/Building.svelte';
   import Mansion from './props/Mansion.svelte';
   import Truck from './props/Truck.svelte';
 
@@ -60,6 +61,7 @@
   ];
   playBeats(cast, beats, { length: SCENE_LENGTH.seize, clock: () => clock, onend: () => onend?.(), skipped: () => skip });
 
+  const SignIcon = $derived(PICTURE_ICONS[option.builds?.picture ?? 'hospital']);
   const hospitals = $derived(Array.from({ length: Math.min(option.builds?.count ?? 0, 6) }, (_, i) => i));
 </script>
 
@@ -93,13 +95,12 @@
     </svg>
 
     <!-- The empty lot, where the money goes. -->
-    <svg class="sign" viewBox="0 0 40 50" aria-hidden="true">
-      <g stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round">
-        <path d="M18 24 V50" />
-        <rect x="2" y="2" width="36" height="24" rx="3" fill="#fffdf7" />
-        <path d="M17 7 H23 V11 H27 V17 H23 V21 H17 V17 H13 V11 H17 Z" fill="var(--red)" stroke-width="1.6" />
-      </g>
-    </svg>
+    <div class="sign" aria-hidden="true">
+      <span class="board" style:color={PICTURE_COLORS[option.builds?.picture ?? 'hospital'] ?? 'var(--red)'}>
+        <SignIcon size="100%" strokeWidth={2.4} />
+      </span>
+      <span class="post"></span>
+    </div>
     <div class="truck tl"><Truck driveAt={1.85} /></div>
 
     <div class="actor harjo tl">
@@ -108,7 +109,7 @@
     </div>
 
     {#each hospitals as i (i)}
-      <div class="hospital tl" style:left="{126 + i * 13}cqw" style:--d="{2.75 + i * 0.14}s"><Hospital /></div>
+      <div class="hospital tl" style:left="{126 + i * 13}cqw" style:--d="{2.75 + i * 0.14}s"><Building picture={option.builds?.picture ?? 'hospital'} /></div>
       <Particles kind="dust" x={131.5 + i * 13} y={83} at={2.75 + i * 0.14} count={8} spread={5} />
       <Particles kind="sparkle" x={131.5 + i * 13} y={58} at={2.95 + i * 0.14} count={5} spread={4} />
     {/each}
@@ -247,6 +248,25 @@
     left: 102cqw;
     bottom: 17cqh;
     width: 7cqw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .board {
+    display: grid;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    padding: 0.6cqw;
+    border: 0.35cqw solid var(--ink);
+    border-radius: 0.6cqw;
+    background: #fffdf7;
+  }
+
+  .post {
+    width: 0.5cqw;
+    height: 6cqh;
+    background: var(--ink);
   }
 
   .hospital {

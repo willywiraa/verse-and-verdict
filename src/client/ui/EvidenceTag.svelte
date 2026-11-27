@@ -142,9 +142,27 @@
     animation: glint 1.6s ease-in-out 0.5s infinite;
   }
 
+  /* On phones the three tags sit in one row; a flipped tag shows only its words. */
   @media (max-width: 560px) {
     .inner {
-      min-height: 3.2rem;
+      min-height: 2.9rem;
+    }
+
+    .front::before {
+      display: none;
+    }
+
+    .back {
+      padding: 0.3rem 0.4rem;
+    }
+
+    .small-icon {
+      display: none;
+    }
+
+    .text {
+      font-size: 0.7rem;
+      line-height: 1.15;
     }
   }
 
